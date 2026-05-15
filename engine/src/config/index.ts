@@ -86,6 +86,38 @@ function buildConfig() {
     // Set RESEARCH_MODE=true with REPLAY_FILE or DB_REPLAY_FROM to run analysis
     researchMode:      bool('RESEARCH_MODE', false),
     researchOutputDir: str('RESEARCH_OUTPUT_DIR', './research-output'),
+
+    // ── Simulation / Paper Execution ──────────────────────────────────────────
+    // Set SIMULATION_MODE=true with REPLAY_FILE or DB_REPLAY_FROM
+    simulationMode:    bool('SIMULATION_MODE', false),
+    simOutputDir:      str('SIM_OUTPUT_DIR',  './sim-output'),
+    simStrategy:       str('SIM_STRATEGY',    'composite'),  // 'composite' | 'whale' | 'composite,whale'
+
+    // Starting capital
+    simStartingCash:   num('SIM_STARTING_CASH', 10_000, 100),
+
+    // Latency model (ms) — additive
+    simDecisionLatencyMs:  num('SIM_DECISION_LATENCY_MS',  5, 0),
+    simWsLatencyMs:        num('SIM_WS_LATENCY_MS',       50, 0),
+    simExecutionLatencyMs: num('SIM_EXECUTION_LATENCY_MS',10, 0),
+
+    // Fees (basis points)
+    simTakerFeeBps: num('SIM_TAKER_FEE_BPS', 20, 0),
+    simMakerFeeBps: num('SIM_MAKER_FEE_BPS',  0, 0),
+
+    // Risk constraints
+    simMaxPositionUsd:        num('SIM_MAX_POSITION_USD',         1_000, 1),
+    simMaxConcurrentPositions:num('SIM_MAX_CONCURRENT_POSITIONS', 5, 1),
+    simMaxConsecutiveLosses:  num('SIM_MAX_CONSECUTIVE_LOSSES',   5, 1),
+    simCooldownAfterLossMs:   num('SIM_COOLDOWN_AFTER_LOSS_MS',   30_000, 0),
+
+    // Optional guards (0 = disabled)
+    simVolatilityGuard: num('SIM_VOLATILITY_GUARD', 0, 0),
+    simLiquidityGuard:  num('SIM_LIQUIDITY_GUARD',  0, 0),
+
+    // Strategy thresholds
+    simMinConfidence:   num('SIM_MIN_CONFIDENCE',   0.60, 0),
+    simMinWhaleSizeUsd: num('SIM_MIN_WHALE_SIZE_USD', 10_000, 0),
   } as const
 }
 

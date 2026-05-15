@@ -18,12 +18,32 @@ import { closePool } from './db/pool.js'
 import { SignalEngine } from './signals/SignalEngine.js'
 import { SignalObserver } from './research/SignalObserver.js'
 import { ResearchSession } from './research/ResearchSession.js'
+import { SimulationEngine } from './sim/SimulationEngine.js'
+import { LatencyModel } from './sim/LatencyModel.js'
+import { CompositeStrategy } from './strategies/CompositeStrategy.js'
+import { WhaleFollowStrategy } from './strategies/WhaleFollowStrategy.js'
+import { ExecutionAnalytics } from './research/ExecutionAnalytics.js'
+import type { Strategy } from './strategies/Strategy.js'
+import type { SignalFrame, MarketRegime } from './signals/types.js'
+import type { MarketSymbol } from './types/market.js'
 
-function resolveMode(): 'research' | 'db-replay' | 'file-replay' | 'live' {
-  if (config.researchMode)  return 'research'
-  if (config.dbReplayFrom)  return 'db-replay'
-  if (config.replayFile)    return 'file-replay'
+function resolveMode(): 'simulation' | 'research' | 'db-replay' | 'file-replay' | 'live' {
+  if (config.simulationMode) return 'simulation'
+  if (config.researchMode)   return 'research'
+  if (config.dbReplayFrom)   return 'db-replay'
+  if (config.replayFile)     return 'file-replay'
   return 'live'
+}
+
+function buildStrategies(spec: string): Strategy[] {
+  const names = spec.split(',').map(s => s.trim().toLowerCase()).filter(Boolean)
+  const out: Strategy[] = []
+  for (const name of names) {
+    if (name === 'composite' || name === 'composite-signal') out.push(new CompositeStrategy())
+    else if (name === 'whale' || name === 'whale-follow')    out.push(new WhaleFollowStrategy())
+    else log.warn(`[main] unknown strategy: ${name}`)
+  }
+  return out.length > 0 ? out : [new CompositeStrategy()]
 }
 
 async function main(): Promise<void> {
@@ -36,7 +56,81 @@ async function main(): Promise<void> {
     persistence: config.persistenceEnabled,
     journal:     config.journalEnabled,
     signals:     config.signalsEnabled,
+    simulation:  config.simulationMode,
   })
+
+  // ── SIMULATION MODE ───────────────────────────────────────────────────────────
+  // Replay-driven paper execution: replay + signals + strategy + fills + analytics
+  if (mode === 'simulation') {
+    if (!config.replayFile && !config.dbReplayFrom) {
+      log.error('[main] SIMULATION_MODE=true requires REPLAY_FILE or DB_REPLAY_FROM to be set')
+      process.exit(1)
+    }
+
+    const sessionId = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19)
+
+    // Start signal pipeline (needed to drive strategy decisions)
+    const signalEngine = new SignalEngine()
+    signalEngine.start()
+
+    // Build strategy chain
+    const strategies = buildStrategies(config.simStrategy)
+    const latency    = new LatencyModel(config.simDecisionLatencyMs, config.simWsLatencyMs, config.simExecutionLatencyMs)
+
+    // Simulation engine
+    const sim = new SimulationEngine(latency, strategies)
+    sim.start()
+
+    // Track regime per symbol at each oracle.price ts for execution attribution
+    const regimeHistory = new Map<MarketSymbol, Array<{ ts: number; regime: MarketRegime }>>()
+    bus.on('signal.frame', ({ frame }: { frame: SignalFrame }) => {
+      const arr = regimeHistory.get(frame.symbol) ?? []
+      arr.push({ ts: frame.ts, regime: frame.regime })
+      regimeHistory.set(frame.symbol, arr)
+    })
+    const regimeByTs = (sym: MarketSymbol, ts: number): MarketRegime | undefined => {
+      const arr = regimeHistory.get(sym)
+      if (!arr || arr.length === 0) return undefined
+      // Binary search for last entry <= ts
+      let lo = 0, hi = arr.length - 1, idx = -1
+      while (lo <= hi) {
+        const mid = (lo + hi) >> 1
+        if (arr[mid]!.ts <= ts) { idx = mid; lo = mid + 1 }
+        else                       hi = mid - 1
+      }
+      return idx >= 0 ? arr[idx]!.regime : undefined
+    }
+
+    // Run replay
+    let firstTs = 0, lastTs = 0
+    bus.on('oracle.price', (e) => { if (firstTs === 0) firstTs = e.ts; lastTs = e.ts })
+
+    if (config.dbReplayFrom) {
+      if (config.persistenceEnabled && config.dbUrl) await runMigration()
+      const replayer = new DbReplayer({
+        from:  new Date(config.dbReplayFrom),
+        to:    config.dbReplayTo ? new Date(config.dbReplayTo) : undefined,
+        speed: config.replaySpeed,
+      })
+      await replayer.start()
+    } else {
+      const replayer = new EventReplayer(config.replayFile!, config.replaySpeed)
+      await replayer.start()
+    }
+
+    sim.stop()
+
+    // Analytics + export
+    const analytics = new ExecutionAnalytics(config.simOutputDir, sessionId)
+    const report    = analytics.produce(sim, strategies.map(s => s.name).join('+'), firstTs, lastTs, regimeByTs)
+    await analytics.exportFills(sim.getPortfolio().getFills())
+    await analytics.exportReport(report)
+    analytics.printSummary(report)
+
+    if (config.persistenceEnabled) void closePool()
+    log.flush()
+    process.exit(0)
+  }
 
   // ── RESEARCH MODE ─────────────────────────────────────────────────────────────
   // Replay-driven signal research: replay events → compute signals → validate → export
