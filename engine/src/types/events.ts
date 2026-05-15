@@ -128,6 +128,31 @@ export interface DriftAlertEvent {
   severity:  'info' | 'warning' | 'critical'
 }
 
+// ─── Ops Events (Phase 7 long-run operations) ─────────────────────────────────
+
+export interface OpsDailyReportEvent {
+  dateUtc:  string
+  path:     string                            // file path of the JSON report
+}
+
+export interface OpsStrategyDegradedEvent {
+  reason:   string
+  sharpe:   number
+  signalsPerMinRatio: number                  // current / baseline
+}
+
+export interface OpsStructuralBreakEvent {
+  metric:    string
+  cusum:     number
+  threshold: number
+}
+
+export interface OpsReconnectStormEvent {
+  service:  'rtds' | 'clob'
+  count:    number
+  windowMs: number
+}
+
 // ─── Event Bus Map ────────────────────────────────────────────────────────────
 
 export interface BusEvents {
@@ -148,4 +173,8 @@ export interface BusEvents {
   'system.recovered': SystemRecoveredEvent
   'signal.frame': SignalFrameEvent
   'drift.alert': DriftAlertEvent
+  'ops.dailyReport':     OpsDailyReportEvent
+  'ops.strategyDegraded':OpsStrategyDegradedEvent
+  'ops.structuralBreak': OpsStructuralBreakEvent
+  'ops.reconnectStorm':  OpsReconnectStormEvent
 }

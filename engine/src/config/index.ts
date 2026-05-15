@@ -154,6 +154,33 @@ function buildConfig() {
     liveKillSwitchVolatility:   num('LIVE_KILL_SWITCH_VOLATILITY',   0.001, 0),
     liveKillSwitchLatencyMs:    num('LIVE_KILL_SWITCH_LATENCY_MS',   5_000, 0),
     liveKillSwitchFile:         str('LIVE_KILL_SWITCH_FILE',         ''),
+
+    // ── Operations Engine (Phase 7 — Long-Run Operations) ───────────────────
+    // Requires LIVE_PAPER_ENABLED=true. Adds long-run observability:
+    // edge persistence, drift evolution, reliability monitoring, daily reports,
+    // dataset curation, operational safety. NO real execution, NO ML.
+    opsEnabled:                bool('OPS_ENABLED', false),
+    opsOutputDir:              str('OPS_OUTPUT_DIR', './ops-output'),
+    opsDatasetEnabled:         bool('OPS_DATASET_ENABLED', true),
+    opsReliabilitySampleMs:    num('OPS_RELIABILITY_SAMPLE_MS', 30_000, 1_000),
+    opsEquitySampleMs:         num('OPS_EQUITY_SAMPLE_MS', 60_000, 5_000),
+
+    // Health degradation thresholds
+    opsDegradeSharpe:          num('OPS_DEGRADE_SHARPE', 0.0, -10),
+    opsAutoKillOnDegrade:      bool('OPS_AUTOKILL_ON_DEGRADE', false),
+
+    // Reconnect storm guard
+    opsReconnectStormCount:    num('OPS_RECONNECT_STORM_COUNT', 5, 1),
+    opsReconnectStormWindowMs: num('OPS_RECONNECT_STORM_WINDOW_MS', 60_000, 1_000),
+
+    // Memory / feed / disk pressure (0 = disabled)
+    opsMemoryKillMb:           num('OPS_MEMORY_KILL_MB', 0, 0),
+    opsDegradedFeedKillMs:     num('OPS_DEGRADED_FEED_KILL_MS', 60_000, 0),
+    opsDiskWarnMb:             num('OPS_DISK_WARN_MB', 1024, 0),
+
+    // CUSUM structural break detection
+    opsCusumK:                 num('OPS_CUSUM_K', 2.0, 0),
+    opsCusumH:                 num('OPS_CUSUM_H', 10.0, 0),
   } as const
 }
 

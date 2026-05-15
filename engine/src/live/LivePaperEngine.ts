@@ -20,6 +20,7 @@ import { DriftDetector, loadBaseline } from './DriftDetector.js'
 import { AlertManager } from './AlertManager.js'
 import { KillSwitchController } from './KillSwitchController.js'
 import { SessionRecorder } from './SessionRecorder.js'
+import { OperationsEngine } from '../ops/OperationsEngine.js'
 import { RingBuffer } from '../utils/RingBuffer.js'
 import type { Strategy } from '../strategies/Strategy.js'
 import type { LivePaperSnapshot } from './types.js'
@@ -34,6 +35,7 @@ export class LivePaperEngine {
   private readonly alerts:        AlertManager
   private readonly killSwitch:    KillSwitchController
   private readonly recorder:      SessionRecorder | null
+  private readonly ops:           OperationsEngine | null
   private readonly recentFills    = new RingBuffer<SimFill>(RECENT_FILLS_CAPACITY)
   private readonly fillsSeen      = new Set<string>()  // orderId set, prevent duplicate observation
 
@@ -65,11 +67,16 @@ export class LivePaperEngine {
         })
       : null
 
+    this.ops = config.opsEnabled
+      ? new OperationsEngine(this.sim, this.health)
+      : null
+
     log.info('[LivePaperEngine] constructed', {
       strategies: strats.map(s => s.name).join('+'),
       latency:    latency.describe(),
       baseline:   config.liveBaselineFile || '(none)',
       recording:  config.liveSessionRecord,
+      ops:        config.opsEnabled,
     })
   }
 
@@ -88,11 +95,13 @@ export class LivePaperEngine {
     bus.on('market.tick', () => this.pollFills())
 
     if (this.recorder) this.recorder.start()
+    if (this.ops)      this.ops.start()
     log.info('[LivePaperEngine] started')
   }
 
   stop(): void {
     if (!this.started) return
+    if (this.ops)        this.ops.stop()
     if (this.recorder)   this.recorder.stop()
     this.killSwitch.stop()
     this.sim.stop()
@@ -109,6 +118,7 @@ export class LivePaperEngine {
       drift:       this.drift.getReport(),
       killSwitch:  this.killSwitch.getStatus(),
       recentFills: this.recentFills.toArray(),
+      ops:         this.ops?.snapshot() ?? null,
     }
   }
 

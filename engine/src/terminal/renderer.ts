@@ -312,7 +312,7 @@ function renderLivePaper(paper: LivePaperSnapshot): string[] {
         .join(' ') || chalk.green('within baseline'))
     : chalk.gray('(no baseline)')
 
-  return [
+  const lines = [
     chalk.cyan('═══ LIVE PAPER ' + '═'.repeat(57)),
     `  Status: ${statusStr}${k.reason ? '  ' + chalk.gray(`(${k.reason.slice(0, 50)})`) : ''}`,
     `  Cash: $${p.cash.toFixed(2)}  Equity: $${p.totalEquity.toFixed(2)}  PnL: ${pnlStr} ${pctStr}  DD: ${ddStr}`,
@@ -323,8 +323,39 @@ function renderLivePaper(paper: LivePaperSnapshot): string[] {
       `RegimeTrans: ${h.regimeTransitionsLast5Min}  ` +
       `Drift: ${driftLine}`,
     `  Recent: ${recentFillsLine}`,
-    '',
   ]
+  if (paper.ops) {
+    const o = paper.ops
+    const e = o.edge.mediumWindow
+    const r = o.reliability
+    const s = o.safety
+    const flags: string[] = []
+    if (s.strategyDegraded)     flags.push(chalk.yellow('DEGRADED'))
+    if (s.reconnectStormActive) flags.push(chalk.red('STORM'))
+    if (s.memoryPressureActive) flags.push(chalk.red('MEM'))
+    if (s.feedEscalationActive) flags.push(chalk.red('FEED-ESC'))
+    if (s.diskPressureActive)   flags.push(chalk.yellow('DISK'))
+    const flagStr = flags.length > 0 ? '  ' + flags.join(' ') : ''
+    lines.push(chalk.cyan('─── ops ────────────────────────────────────────────────────────────────'))
+    lines.push(
+      `  Day: ${o.currentDateUtc}  Reports: ${o.reportsWritten}  ` +
+      `DatasetRecs: ${o.datasetRecords}  Days: ${o.edge.dailyHistory.length}`,
+    )
+    lines.push(
+      `  Sharpe 60m: ${e.rollingSharpe.toFixed(2)}  ` +
+      `HitRate: ${(e.rollingHitRate * 100).toFixed(0)}%  ` +
+      `HalfLife: ${o.edge.edgeHalfLifeHours != null ? o.edge.edgeHalfLifeHours.toFixed(1) + 'h' : 'n/a'}  ` +
+      `Breaks: ${o.drift.structuralBreaks.length}`,
+    )
+    lines.push(
+      `  Uptime RTDS/CLOB: ${(r.rtdsUptimePct * 100).toFixed(1)}%/${(r.clobUptimePct * 100).toFixed(1)}%  ` +
+      `Reconn: ${r.rtdsReconnects}/${r.clobReconnects}  ` +
+      `LagP99: ${r.p99EventLagMs.toFixed(0)}ms  ` +
+      `Heap: ${r.avgHeapMb.toFixed(0)}MB${flagStr}`,
+    )
+  }
+  lines.push('')
+  return lines
 }
 
 // ─── Main Render ──────────────────────────────────────────────────────────────

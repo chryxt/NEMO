@@ -63,6 +63,7 @@ async function main(): Promise<void> {
     simulation:  config.simulationMode,
     validation:  config.validationMode,
     livePaper:   config.livePaperEnabled,
+    ops:         config.opsEnabled,
   })
 
   // ── VALIDATION MODE ───────────────────────────────────────────────────────────
