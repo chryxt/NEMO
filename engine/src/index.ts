@@ -15,8 +15,12 @@ import { DbJournalWriter } from './persistence/DbJournalWriter.js'
 import { DbReplayer } from './replay/DbReplayer.js'
 import { runMigration } from './db/migrate.js'
 import { closePool } from './db/pool.js'
+import { SignalEngine } from './signals/SignalEngine.js'
+import { SignalObserver } from './research/SignalObserver.js'
+import { ResearchSession } from './research/ResearchSession.js'
 
-function resolveMode(): 'db-replay' | 'file-replay' | 'live' {
+function resolveMode(): 'research' | 'db-replay' | 'file-replay' | 'live' {
+  if (config.researchMode)  return 'research'
   if (config.dbReplayFrom)  return 'db-replay'
   if (config.replayFile)    return 'file-replay'
   return 'live'
@@ -31,7 +35,31 @@ async function main(): Promise<void> {
     nodeEnv:     config.nodeEnv,
     persistence: config.persistenceEnabled,
     journal:     config.journalEnabled,
+    signals:     config.signalsEnabled,
   })
+
+  // ── RESEARCH MODE ─────────────────────────────────────────────────────────────
+  // Replay-driven signal research: replay events → compute signals → validate → export
+  if (mode === 'research') {
+    const source = config.dbReplayFrom
+      ? { type: 'db' as const, from: new Date(config.dbReplayFrom), to: config.dbReplayTo ? new Date(config.dbReplayTo) : undefined }
+      : config.replayFile
+        ? { type: 'file' as const, path: config.replayFile }
+        : null
+
+    if (!source) {
+      log.error('[main] RESEARCH_MODE=true requires REPLAY_FILE or DB_REPLAY_FROM to be set')
+      process.exit(1)
+    }
+
+    if (config.persistenceEnabled && config.dbUrl) await runMigration()
+
+    const session = new ResearchSession(source, config.researchOutputDir, config.replaySpeed)
+    await session.run()
+    if (config.persistenceEnabled) void closePool()
+    log.flush()
+    process.exit(0)
+  }
 
   const metricsEngine = new MetricsEngine()
   const healthMonitor = new FeedHealthMonitor()
@@ -164,6 +192,16 @@ async function main(): Promise<void> {
     }
   }
 
+  // Optional signal engine + observability
+  let signalEngine:  SignalEngine  | null = null
+  let signalObserver: SignalObserver | null = null
+  if (config.signalsEnabled) {
+    signalEngine   = new SignalEngine()
+    signalObserver = new SignalObserver()
+    signalEngine.start()
+    signalObserver.start()
+  }
+
   const shutdown = (signal: string) => {
     log.info(`[main] ${signal} — shutting down`)
     terminal.stop()
@@ -172,13 +210,15 @@ async function main(): Promise<void> {
     clockEngine.stop()
     metricsEngine.stop()
     healthMonitor.stop()
-    if (recorder)    recorder.stop()
-    if (persistence) persistence.stop()
-    if (journal)     journal.stop()
+    if (recorder)      recorder.stop()
+    if (persistence)   persistence.stop()
+    if (journal)       journal.stop()
+    if (signalEngine)  signalEngine.stop()
     const s = stateEngine.getState()
     log.info(`[main] last window: ${s.window.windowTs}  uptime: ${Math.floor(Date.now() / 1000) - s.startedAt}s`)
     log.info(`[main] final state hash: ${stateEngine.getStateHash()}  mutations: ${stateEngine.getMutationCount()}`)
-    if (persistence) log.info('[main] persistence metrics:', persistence.getPersistenceMetrics())
+    if (persistence)   log.info('[main] persistence metrics:', persistence.getPersistenceMetrics())
+    if (signalObserver) log.info('[main] signal observability:', signalObserver.getMetrics())
     void closePool()
     log.flush()
     process.exit(0)

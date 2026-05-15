@@ -78,6 +78,14 @@ function buildConfig() {
     // ── DB Replay ─────────────────────────────────────────────────────────────
     dbReplayFrom: process.env['DB_REPLAY_FROM'] ?? null,   // ISO timestamp
     dbReplayTo:   process.env['DB_REPLAY_TO']   ?? null,   // ISO timestamp (optional)
+
+    // ── Signal Engine ─────────────────────────────────────────────────────────
+    signalsEnabled: bool('SIGNALS_ENABLED', false),
+
+    // ── Research Mode ─────────────────────────────────────────────────────────
+    // Set RESEARCH_MODE=true with REPLAY_FILE or DB_REPLAY_FROM to run analysis
+    researchMode:      bool('RESEARCH_MODE', false),
+    researchOutputDir: str('RESEARCH_OUTPUT_DIR', './research-output'),
   } as const
 }
 

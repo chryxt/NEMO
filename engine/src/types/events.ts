@@ -1,4 +1,5 @@
 import type { MarketSymbol, MarketWindow, GlobalState, WhaleTrade } from './market.js'
+import type { SignalFrame } from '../signals/types.js'
 
 // ─── RTDS Events ─────────────────────────────────────────────────────────────
 
@@ -110,6 +111,13 @@ export interface SystemRecoveredEvent {
   source: string    // e.g. "BTC oracle", "CLOB orderbook"
 }
 
+// ─── Signal Events ────────────────────────────────────────────────────────────
+
+export interface SignalFrameEvent {
+  frame:     SignalFrame
+  latencyUs: number    // feature extraction time in microseconds
+}
+
 // ─── Event Bus Map ────────────────────────────────────────────────────────────
 
 export interface BusEvents {
@@ -128,4 +136,5 @@ export interface BusEvents {
   'system.warning': SystemWarningEvent
   'system.degraded': SystemDegradedEvent
   'system.recovered': SystemRecoveredEvent
+  'signal.frame': SignalFrameEvent
 }
