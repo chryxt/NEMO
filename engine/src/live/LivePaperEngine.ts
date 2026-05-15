@@ -103,7 +103,7 @@ export class LivePaperEngine {
 
     if (this.recorder) this.recorder.start()
     if (this.ops)      this.ops.start()
-    if (this.shadow)   this.shadow.start()
+    if (this.shadow)   void this.shadow.start()
     log.info('[LivePaperEngine] started')
   }
 

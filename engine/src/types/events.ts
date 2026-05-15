@@ -201,6 +201,35 @@ export interface ShadowHaltEvent {
   source:  'manual-file' | 'sandbox-guard' | 'risk-escalation'
 }
 
+// ─── Execution Events (Phase 9 controlled micro-live execution) ───────────────
+
+export interface ExecutionSubmittedEvent {
+  executionOrderId: string
+  shadowOrderId:    string
+  remoteOrderId:    string
+  dryRun:           boolean
+  notionalUsd:      number
+}
+
+export interface ExecutionConfirmedEvent {
+  executionOrderId: string
+  realizedPrice:    number | null
+  realizedFeeUsd:   number | null
+  priceDeltaBps:    number | null
+  latencyMs:        number | null
+}
+
+export interface ExecutionFailedEvent {
+  shadowOrderId: string
+  reason:        string
+}
+
+export interface ExecutionHaltActivatedEvent {
+  source:  'operator-console' | 'halt-file' | 'rpc-degraded'
+        |  'nonce-desync'     | 'sim-kill-switch' | 'manual-api'
+  reason:  string
+}
+
 // ─── Event Bus Map ────────────────────────────────────────────────────────────
 
 export interface BusEvents {
@@ -230,4 +259,8 @@ export interface BusEvents {
   'shadow.approvalDecision':    ShadowApprovalDecisionEvent
   'shadow.riskFlag':            ShadowRiskFlagEvent
   'shadow.halt':                ShadowHaltEvent
+  'execution.submitted':        ExecutionSubmittedEvent
+  'execution.confirmed':        ExecutionConfirmedEvent
+  'execution.failed':           ExecutionFailedEvent
+  'execution.haltActivated':    ExecutionHaltActivatedEvent
 }

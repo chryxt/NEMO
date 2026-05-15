@@ -377,6 +377,28 @@ function renderLivePaper(paper: LivePaperSnapshot): string[] {
       `RiskFlags: ${sh.operationalRisk.flagsLastHour}`,
     )
     lines.push(`  Audit: ${sh.auditEntries} entries  ${sandboxFlags.join(' ')}`)
+    if (sh.execution) {
+      const ex = sh.execution
+      const armed = ex.enabled && ex.armed
+      const live  = armed && !ex.dryRun
+      const statusBadge =
+        live                  ? chalk.red('LIVE-EXEC') :
+        armed                 ? chalk.yellow('ARMED-DRY-RUN') :
+        ex.enabled            ? chalk.gray('LOADED') :
+                                 chalk.gray('disabled')
+      const haltBadge = ex.haltActive ? chalk.red(`HALT(${ex.haltReason ?? ''})`.slice(0, 40)) : ''
+      const rpcBadge  = ex.rpc?.ok === false ? chalk.red(`RPC:${ex.rpc.reason}`.slice(0, 30)) : ''
+      lines.push(chalk.cyan('─── execution ──────────────────────────────────────────────────────────'))
+      lines.push(
+        `  Gateway: ${statusBadge}  signer=${ex.signerMethod}  wallet=${ex.walletAddress.slice(0, 10)}…  ${haltBadge} ${rpcBadge}`,
+      )
+      lines.push(
+        `  Daily: $${ex.daily.spentUsd.toFixed(2)}/$${ex.maxDailyNotionalUsd}  ` +
+        `cap=$${ex.maxNotionalUsd}  maxOpen=${ex.maxOpenPositions}  ` +
+        `lock=${ex.strategyLock ?? '(none)'}  ` +
+        `subm=${ex.ordersSubmitted} conf=${ex.ordersConfirmed} rej=${ex.ordersRejected} fail=${ex.ordersFailed}`,
+      )
+    }
   }
   lines.push('')
   return lines

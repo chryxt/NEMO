@@ -65,6 +65,11 @@ async function main(): Promise<void> {
     livePaper:   config.livePaperEnabled,
     ops:         config.opsEnabled,
     shadow:      config.shadowEnabled,
+    execution:   config.executionEnabled
+                   ? (config.executionArmed
+                       ? (config.executionDryRun ? 'armed-dry-run' : 'LIVE')
+                       : 'loaded')
+                   : 'disabled',
   })
 
   // ── VALIDATION MODE ───────────────────────────────────────────────────────────

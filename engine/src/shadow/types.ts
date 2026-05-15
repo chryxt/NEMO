@@ -185,4 +185,6 @@ export interface ShadowSnapshot {
     approved:            ApprovalRequest[]   // last 3
     comparisons:         ExecutionComparison[]  // last 5
   }
+  // Phase 9 — present when RealExecutionGateway is loaded
+  execution?:            import('../execution/types.js').ExecutionGatewaySnapshot | null
 }

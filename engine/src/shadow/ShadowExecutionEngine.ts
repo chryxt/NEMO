@@ -26,6 +26,7 @@ import { SandboxGuards } from './SandboxGuards.js'
 import { OperationalRiskMonitor } from './OperationalRisk.js'
 import { ExecutionReadiness } from './ExecutionReadiness.js'
 import { AuditLog } from './AuditLog.js'
+import { RealExecutionGateway } from '../execution/RealExecutionGateway.js'
 import type { SimulationEngine } from '../sim/SimulationEngine.js'
 import type { ShadowSnapshot } from './types.js'
 
@@ -44,6 +45,7 @@ export class ShadowExecutionEngine {
   private readonly risk:       OperationalRiskMonitor
   private readonly readiness:  ExecutionReadiness
   private readonly audit:      AuditLog
+  private readonly gateway:    RealExecutionGateway | null
 
   private started   = false
   private fillsSeen = new Set<string>()
@@ -63,6 +65,9 @@ export class ShadowExecutionEngine {
     this.risk       = new OperationalRiskMonitor()
     this.readiness  = new ExecutionReadiness(this.comparator, this.risk, this.emitter)
     this.audit      = new AuditLog(config.shadowOutputDir)
+    this.gateway    = config.executionEnabled
+      ? new RealExecutionGateway(sim, this.approval)
+      : null
 
     log.info('[ShadowExecutionEngine] constructed', {
       walletEnabled:        config.shadowWalletEnabled,
@@ -70,16 +75,18 @@ export class ShadowExecutionEngine {
       verifyingContract:    this.wallet.getVerifyingContract(),
       maxNotionalUsd:       config.shadowMaxNotionalUsd,
       autoApprove:          config.shadowAutoApprove,
-      realSubmission:       false,
+      gateway:              config.executionEnabled,
+      realSubmission:       config.executionEnabled && config.executionArmed && !config.executionDryRun,
     })
   }
 
-  start(): void {
+  async start(): Promise<void> {
     if (this.started) return
     this.started = true
 
     this.audit.start()
     this.approval.start()
+    if (this.gateway) await this.gateway.start()
     this.guards.start((reason) => {
       this.audit.append('shadow.halt', { reason }, 'engine')
       if (!this.sim.isKillSwitchActive()) {
@@ -116,6 +123,10 @@ export class ShadowExecutionEngine {
         const rejectReason = this.guards.rejectReason(order)
         const req = this.approval.enqueue(order, rejectReason)
         this.comparator.observeShadow(order)
+
+        // Phase 9: hand to gateway for pre-flight evaluation (no submission
+        // until shadow approval decision arrives separately)
+        if (this.gateway && !rejectReason) this.gateway.considerShadow(order)
 
         this.audit.append(rejectReason ? 'shadow.rejected' : 'shadow.queued', {
           id: req.id, reason: rejectReason ?? null,
@@ -158,6 +169,7 @@ export class ShadowExecutionEngine {
       approvalsApproved:this.approval.getCount('approved'),
       approvalsRejected:this.approval.getCount('rejected'),
     }, 'engine')
+    if (this.gateway) this.gateway.stop()
     this.guards.stop()
     this.approval.stop()
     this.audit.stop()
@@ -182,6 +194,7 @@ export class ShadowExecutionEngine {
         approved:    this.approval.getApproved().slice(-3),
         comparisons: this.comparator.getRecent().slice(-5),
       },
+      execution:   this.gateway?.snapshot() ?? null,
     }
   }
 

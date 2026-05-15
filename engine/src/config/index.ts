@@ -200,6 +200,42 @@ function buildConfig() {
 
     // Approval mode
     shadowAutoApprove:         bool('SHADOW_AUTO_APPROVE', false),
+
+    // ── Real Execution Gateway (Phase 9 — Controlled Micro-Live Execution) ──
+    // TRIPLE-FLAG ACTIVATION — defaults below leave the gateway fully OFF:
+    //   EXECUTION_ENABLED=false → gateway never constructs
+    //   EXECUTION_ARMED=false   → even if loaded, no submissions
+    //   EXECUTION_DRY_RUN=true  → even if armed, no network POST to exchange
+    // Per-order operator approval is also required (Phase 8 ApprovalQueue).
+    executionEnabled:                bool('EXECUTION_ENABLED', false),
+    executionArmed:                  bool('EXECUTION_ARMED',   false),
+    executionDryRun:                 bool('EXECUTION_DRY_RUN', true),
+
+    // Endpoints
+    executionPolymarketUrl:          str('EXECUTION_POLYMARKET_URL', 'https://clob.polymarket.com'),
+    executionPolygonRpcUrl:          str('EXECUTION_POLYGON_RPC_URL', 'https://polygon-rpc.com'),
+
+    // Signer — local key OR external RPC signer (HW wallet preferred)
+    executionSignerRpcUrl:           str('EXECUTION_SIGNER_RPC_URL', ''),
+    // Note: EXECUTION_PRIVATE_KEY is read directly by SecureWallet, never via this object.
+
+    // Hard caps (very small defaults for safety)
+    executionMaxNotionalUsd:         num('EXECUTION_MAX_NOTIONAL_USD',         5,  0),
+    executionMaxDailyNotionalUsd:    num('EXECUTION_MAX_DAILY_NOTIONAL_USD',  50, 0),
+    executionMaxOpenPositions:       num('EXECUTION_MAX_OPEN_POSITIONS',       1,  0),
+    executionSingleStrategy:         str('EXECUTION_SINGLE_STRATEGY', 'composite'),
+
+    // RPC health bounds
+    executionRpcMaxBlockLagSecs:     num('EXECUTION_RPC_MAX_BLOCK_LAG_SECS', 10, 1),
+    executionRpcMaxGasGwei:          num('EXECUTION_RPC_MAX_GAS_GWEI',     500, 1),
+    executionRpcLatencyMaxMs:        num('EXECUTION_RPC_LATENCY_MAX_MS', 5_000, 100),
+
+    // Operator console + halt
+    executionConsoleSocket:          str('EXECUTION_CONSOLE_SOCKET', ''),
+    executionHaltFile:               str('EXECUTION_HALT_FILE', ''),
+
+    // Journal
+    executionJournalDir:             str('EXECUTION_JOURNAL_DIR', './execution-journal'),
   } as const
 }
 
