@@ -12,6 +12,8 @@
   },
   "dependencies": {
     "chalk": "^4.1.2",
+    "pino": "^9.6.0",
+    "pino-pretty": "^11.3.0",
     "ws": "^8.18.0"
   },
   "devDependencies": {

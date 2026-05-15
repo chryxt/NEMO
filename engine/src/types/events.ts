@@ -93,6 +93,22 @@ export interface ConnectionEvent {
   attempt?: number
 }
 
+// ─── System Health Events ─────────────────────────────────────────────────────
+
+export interface SystemWarningEvent {
+  source: string    // e.g. "BTC oracle", "CLOB orderbook"
+  message: string
+  staleSecs: number
+}
+
+export interface SystemDegradedEvent {
+  reason: string
+}
+
+export interface SystemRecoveredEvent {
+  source: string    // e.g. "BTC oracle", "CLOB orderbook"
+}
+
 // ─── Event Bus Map ────────────────────────────────────────────────────────────
 
 export interface BusEvents {
@@ -108,4 +124,7 @@ export interface BusEvents {
   'state.snapshot': StateSnapshotEvent
   'whale.alert': WhaleAlertEvent
   'connection.change': ConnectionEvent
+  'system.warning': SystemWarningEvent
+  'system.degraded': SystemDegradedEvent
+  'system.recovered': SystemRecoveredEvent
 }

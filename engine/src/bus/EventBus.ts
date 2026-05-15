@@ -5,12 +5,19 @@ type Listener<T> = (event: T) => void
 
 class EventBus {
   private emitter = new EventEmitter()
+  private tapFn: ((event: string, payload: unknown) => void) | null = null
 
   constructor() {
     this.emitter.setMaxListeners(50)
   }
 
+  // Single tap slot — used by EventRecorder to intercept all events
+  tap(fn: (event: string, payload: unknown) => void): void {
+    this.tapFn = fn
+  }
+
   emit<K extends keyof BusEvents>(event: K, payload: BusEvents[K]): void {
+    this.tapFn?.(event as string, payload)
     this.emitter.emit(event as string, payload)
   }
 

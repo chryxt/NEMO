@@ -1,15 +1,30 @@
-const LEVEL = (process.env['LOG_LEVEL'] ?? 'info') as 'debug' | 'info' | 'warn' | 'error'
+import pino from 'pino'
+import { config } from '../config/index.js'
 
-const levels = { debug: 0, info: 1, warn: 2, error: 3 }
-const current = levels[LEVEL] ?? 1
+const isDev = config.nodeEnv !== 'production'
 
-function ts(): string {
-  return new Date().toISOString().slice(11, 23)  // HH:mm:ss.mmm
-}
+const pinoLogger: pino.Logger = isDev
+  ? pino({
+      level: config.logLevel,
+      transport: {
+        target: 'pino-pretty',
+        options: {
+          colorize: true,
+          translateTime: 'HH:MM:ss.l',
+          ignore: 'pid,hostname',
+          destination: 2,
+        },
+      },
+    })
+  : pino({ level: config.logLevel }, pino.destination(2))
+
+export { pinoLogger }
 
 export const log = {
-  debug: (msg: string) => { if (current <= 0) process.stderr.write(`[${ts()}] DBG  ${msg}\n`) },
-  info:  (msg: string) => { if (current <= 1) process.stderr.write(`[${ts()}] INFO ${msg}\n`) },
-  warn:  (msg: string) => { if (current <= 2) process.stderr.write(`[${ts()}] WARN ${msg}\n`) },
-  error: (msg: string) => { if (current <= 3) process.stderr.write(`[${ts()}] ERR  ${msg}\n`) },
+  trace: (msg: string, meta?: object) => meta ? pinoLogger.trace(meta, msg) : pinoLogger.trace(msg),
+  debug: (msg: string, meta?: object) => meta ? pinoLogger.debug(meta, msg) : pinoLogger.debug(msg),
+  info:  (msg: string, meta?: object) => meta ? pinoLogger.info(meta, msg)  : pinoLogger.info(msg),
+  warn:  (msg: string, meta?: object) => meta ? pinoLogger.warn(meta, msg)  : pinoLogger.warn(msg),
+  error: (msg: string, meta?: object) => meta ? pinoLogger.error(meta, msg) : pinoLogger.error(msg),
+  flush: () => pinoLogger.flush(),
 }

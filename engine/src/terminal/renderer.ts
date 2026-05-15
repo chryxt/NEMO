@@ -1,5 +1,7 @@
 import chalk from 'chalk'
 import type { GlobalState, MarketSymbol, SymbolState } from '../types/market.js'
+import type { EngineMetrics } from '../engines/MetricsEngine.js'
+import type { FeedHealth, FeedStatus } from '../monitors/FeedHealthMonitor.js'
 
 const W = 72  // terminal width
 
@@ -52,13 +54,13 @@ function fmtDelta(v: number): string {
 
 function fmtDirection(s: SymbolState): string {
   if (!s.priceDirection) return ' '
-  if (s.priceDirection === 'up') return chalk.green('▲')
+  if (s.priceDirection === 'up')   return chalk.green('▲')
   if (s.priceDirection === 'down') return chalk.red('▼')
   return chalk.gray('─')
 }
 
 function fmtConnection(status: string): string {
-  if (status === 'connected') return chalk.green('●')
+  if (status === 'connected')    return chalk.green('●')
   if (status === 'reconnecting') return chalk.yellow('◌')
   return chalk.red('✕')
 }
@@ -88,14 +90,43 @@ function windowLabel(ts: number): string {
   return `${h}:${m}`
 }
 
+function fmtRate(r: number): string {
+  return r.toFixed(1) + '/s'
+}
+
+function fmtMb(mb: number): string {
+  return mb.toFixed(1) + 'MB'
+}
+
+function fmtUptime(ms: number | null): string {
+  if (ms === null) return chalk.gray('─')
+  const secs = Math.floor((Date.now() - ms) / 1000)
+  if (secs < 60)  return `${secs}s`
+  if (secs < 3600) return `${Math.floor(secs / 60)}m ${secs % 60}s`
+  return `${Math.floor(secs / 3600)}h ${Math.floor((secs % 3600) / 60)}m`
+}
+
+function fmtTotal(n: number): string {
+  if (n >= 1_000_000) return (n / 1_000_000).toFixed(1) + 'M'
+  if (n >= 1_000)     return (n / 1_000).toFixed(1) + 'k'
+  return String(n)
+}
+
+function fmtFeedStatus(status: FeedStatus, ageSecs: number | null): string {
+  const age = ageSecs !== null ? `${ageSecs.toFixed(0)}s` : '?'
+  if (status === 'healthy') return chalk.green(`✓(${age})`)
+  if (status === 'warning') return chalk.yellow(`⚠(${age})`)
+  return chalk.red(`✕(${age})`)
+}
+
 // ─── Sections ────────────────────────────────────────────────────────────────
 
 function renderHeader(state: GlobalState): string[] {
-  const rtds = fmtConnection(state.connections.rtds)
-  const clob = fmtConnection(state.connections.clob)
+  const rtds     = fmtConnection(state.connections.rtds)
+  const clob     = fmtConnection(state.connections.clob)
   const countdown = fmtCountdown(state.window.secondsRemaining)
-  const wStart = windowLabel(state.window.windowTs)
-  const wEnd = windowLabel(state.window.closeTs)
+  const wStart   = windowLabel(state.window.windowTs)
+  const wEnd     = windowLabel(state.window.closeTs)
 
   return [
     rule(),
@@ -122,10 +153,10 @@ function renderPriceTable(state: GlobalState): string[] {
   )
 
   const rows = (['BTC', 'ETH', 'SOL'] as MarketSymbol[]).map((sym) => {
-    const s = state.symbols[sym]
+    const s      = state.symbols[sym]
     const priceStr = fmtPrice(s.oraclePrice, sym)
-    const ageMs = s.oraclePriceTs ? Date.now() - s.oraclePriceTs : Infinity
-    const stale = ageMs > 60_000
+    const ageMs  = s.oraclePriceTs ? Date.now() - s.oraclePriceTs : Infinity
+    const stale  = ageMs > 60_000
     const priceColored = stale ? chalk.yellow(priceStr) : chalk.white.bold(priceStr)
 
     return (
@@ -167,9 +198,9 @@ function renderWhales(state: GlobalState): string[] {
 
   const rows = allWhales.map((w) => {
     const timeStr = fmtTs(w.ts * 1000)
-    const side = w.side === 'BUY' ? chalk.green('BUY') : chalk.red('SELL')
-    const size = chalk.bold(`$${(w.sizeUsd / 1000).toFixed(1)}k`)
-    const wallet = chalk.gray(w.wallet.slice(0, 6) + '…' + w.wallet.slice(-4))
+    const side    = w.side === 'BUY' ? chalk.green('BUY') : chalk.red('SELL')
+    const size    = chalk.bold(`$${(w.sizeUsd / 1000).toFixed(1)}k`)
+    const wallet  = chalk.gray(w.wallet.slice(0, 6) + '…' + w.wallet.slice(-4))
     return (
       '  ' +
       chalk.gray(pad(timeStr, 9)) +
@@ -182,6 +213,58 @@ function renderWhales(state: GlobalState): string[] {
   })
 
   return [...header, ...rows]
+}
+
+function renderMetrics(metrics: EngineMetrics): string[] {
+  const rateRow = (
+    '  ' +
+    chalk.gray('oracle ') + chalk.white(pad(fmtRate(metrics.oracleMsgRate), 8)) +
+    chalk.gray('trades ') + chalk.white(pad(fmtRate(metrics.tradeMsgRate), 8)) +
+    chalk.gray('clob ')   + chalk.white(pad(fmtRate(metrics.clobMsgRate), 8)) +
+    chalk.gray('│ ') +
+    chalk.gray('heap ')   + chalk.white(pad(fmtMb(metrics.heapUsedMb), 9)) +
+    chalk.gray('rss ')    + chalk.white(fmtMb(metrics.rssMb))
+  )
+
+  const reconRow = (
+    '  ' +
+    chalk.gray('RTDS ') + fmtConnection(metrics.rtdsConnectedSinceMs !== null ? 'connected' : 'reconnecting') +
+    ' ' + chalk.white(fmtUptime(metrics.rtdsConnectedSinceMs)) +
+    '  ' +
+    chalk.gray('CLOB ') + fmtConnection(metrics.clobConnectedSinceMs !== null ? 'connected' : 'reconnecting') +
+    ' ' + chalk.white(fmtUptime(metrics.clobConnectedSinceMs)) +
+    '  ' +
+    chalk.gray('recon:') + chalk.white(`${metrics.rtdsReconnects}/${metrics.clobReconnects}`) +
+    '  ' +
+    chalk.gray('total: oracle ') + chalk.white(fmtTotal(metrics.totalOraclePrices)) +
+    chalk.gray('  trades ') + chalk.white(fmtTotal(metrics.totalTrades)) +
+    chalk.gray('  clob ') + chalk.white(fmtTotal(metrics.totalClobEvents))
+  )
+
+  return [
+    '',
+    chalk.gray('  SYSTEM METRICS'),
+    divider(),
+    rateRow,
+    reconRow,
+  ]
+}
+
+function renderHealth(health: FeedHealth): string[] {
+  const oracle = (['BTC', 'ETH', 'SOL'] as MarketSymbol[])
+    .map((sym) => chalk.cyan(sym) + ' ' + fmtFeedStatus(health.oracle[sym].status, health.oracle[sym].ageSecs))
+    .join('  ')
+
+  const clobStr = chalk.gray('CLOB ') + fmtFeedStatus(health.clob.status, health.clob.ageSecs)
+
+  const degraded = health.degraded ? '  ' + chalk.red.bold('⚠ DEGRADED') : ''
+
+  return [
+    '',
+    chalk.gray('  FEED HEALTH'),
+    divider(),
+    '  ' + oracle + '  │  ' + clobStr + degraded,
+  ]
 }
 
 function renderFooter(state: GlobalState): string[] {
@@ -199,12 +282,14 @@ function renderFooter(state: GlobalState): string[] {
 
 // ─── Main Render ──────────────────────────────────────────────────────────────
 
-export function render(state: GlobalState): string {
+export function render(state: GlobalState, metrics: EngineMetrics, health: FeedHealth): string {
   const sections = [
     ...renderHeader(state),
     '',
     ...renderPriceTable(state),
     ...renderWhales(state),
+    ...renderMetrics(metrics),
+    ...renderHealth(health),
     ...renderFooter(state),
   ]
   return sections.join('\n')
