@@ -44,9 +44,27 @@ async function main(): Promise<void> {
     stateEngine.start()
     terminal.start()
 
-    replayer.start().catch((err: unknown) =>
-      log.error(`[Replayer] fatal: ${err instanceof Error ? err.message : String(err)}`)
-    )
+    replayer.start()
+      .then(() => {
+        // Log final state hash for determinism verification
+        const hash     = stateEngine.getStateHash()
+        const expected = config.expectedStateHash
+
+        if (expected) {
+          if (hash === expected) {
+            log.info(`[Replay] state hash VERIFIED ✓  ${hash}`)
+          } else {
+            log.error(`[Replay] state hash MISMATCH — got ${hash}, expected ${expected}`)
+          }
+        } else {
+          log.info(`[Replay] final state hash: ${hash}`)
+          log.info(`[Replay] set EXPECTED_STATE_HASH=${hash} to verify determinism on next run`)
+        }
+        log.info(`[Replay] mutations: ${stateEngine.getMutationCount()}`)
+      })
+      .catch((err: unknown) =>
+        log.error(`[Replayer] fatal: ${err instanceof Error ? err.message : String(err)}`)
+      )
     return
   }
 
@@ -75,6 +93,7 @@ async function main(): Promise<void> {
     if (recorder) recorder.stop()
     const s = stateEngine.getState()
     log.info(`[main] last window: ${s.window.windowTs}  uptime: ${Math.floor(Date.now() / 1000) - s.startedAt}s`)
+    log.info(`[main] final state hash: ${stateEngine.getStateHash()}  mutations: ${stateEngine.getMutationCount()}`)
     log.flush()
     process.exit(0)
   }

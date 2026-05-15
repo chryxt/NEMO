@@ -67,6 +67,7 @@ export interface ClobTickSizeChangeEvent {
 
 export interface MarketTickEvent {
   window: MarketWindow
+  nowSec: number   // logical clock second — use this instead of Date.now() for determinism
 }
 
 export interface MarketWindowOpenEvent {

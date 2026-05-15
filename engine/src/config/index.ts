@@ -53,6 +53,12 @@ function buildConfig() {
     recordEvents: bool('RECORD_EVENTS', false),
     replayFile:   process.env['REPLAY_FILE'] ?? null,
     replaySpeed:  num('REPLAY_SPEED', 1.0, 0),
+
+    // Replay verification — set EXPECTED_STATE_HASH to the hash from a prior run
+    expectedStateHash: process.env['EXPECTED_STATE_HASH'] ?? null,
+
+    // Memory pressure warning threshold (MB)
+    memoryWarnMb: num('MEMORY_WARN_MB', 200, 50),
   } as const
 }
 

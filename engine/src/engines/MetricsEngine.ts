@@ -1,7 +1,10 @@
 import { bus } from '../bus/EventBus.js'
+import { log } from '../utils/logger.js'
+import { config } from '../config/index.js'
 import { RingBuffer } from '../utils/RingBuffer.js'
 
-const RATE_WINDOW_SECS = 10  // rolling window for msg/sec rates
+const RATE_WINDOW_SECS   = 10      // rolling window for msg/sec rates
+const MEM_WARN_INTERVAL  = 60_000  // warn at most once per minute
 
 export interface EngineMetrics {
   // Message rates — rolling average over last 10 seconds
@@ -51,7 +54,8 @@ export class MetricsEngine {
   private rtdsConnectedSinceMs: number | null = null
   private clobConnectedSinceMs: number | null = null
 
-  private startedAt    = Date.now()
+  private startedAt       = Date.now()
+  private lastMemWarnMs   = 0
   private bucketTimer: NodeJS.Timeout | null = null
 
   start(): void {
@@ -98,7 +102,15 @@ export class MetricsEngine {
   }
 
   getMetrics(): EngineMetrics {
-    const mem = process.memoryUsage()
+    const mem      = process.memoryUsage()
+    const heapMb   = mem.heapUsed / 1_048_576
+    const now      = Date.now()
+
+    if (heapMb > config.memoryWarnMb && now - this.lastMemWarnMs > MEM_WARN_INTERVAL) {
+      log.warn(`[Metrics] memory pressure: heap ${heapMb.toFixed(1)}MB exceeds ${config.memoryWarnMb}MB threshold`)
+      this.lastMemWarnMs = now
+    }
+
     return {
       oracleMsgRate: this.rate(this.oracleBuckets),
       tradeMsgRate:  this.rate(this.tradeBuckets),
@@ -110,8 +122,8 @@ export class MetricsEngine {
       clobReconnects:         this.clobReconnects,
       rtdsConnectedSinceMs:   this.rtdsConnectedSinceMs,
       clobConnectedSinceMs:   this.clobConnectedSinceMs,
-      heapUsedMb: mem.heapUsed / 1_048_576,
-      rssMb:       mem.rss      / 1_048_576,
+      heapUsedMb: heapMb,
+      rssMb:       mem.rss / 1_048_576,
       uptimeSecs:  Math.floor((Date.now() - this.startedAt) / 1_000),
       sampledAtMs: Date.now(),
     }
