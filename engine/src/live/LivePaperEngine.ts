@@ -21,6 +21,7 @@ import { AlertManager } from './AlertManager.js'
 import { KillSwitchController } from './KillSwitchController.js'
 import { SessionRecorder } from './SessionRecorder.js'
 import { OperationsEngine } from '../ops/OperationsEngine.js'
+import { ShadowExecutionEngine } from '../shadow/ShadowExecutionEngine.js'
 import { RingBuffer } from '../utils/RingBuffer.js'
 import type { Strategy } from '../strategies/Strategy.js'
 import type { LivePaperSnapshot } from './types.js'
@@ -36,6 +37,7 @@ export class LivePaperEngine {
   private readonly killSwitch:    KillSwitchController
   private readonly recorder:      SessionRecorder | null
   private readonly ops:           OperationsEngine | null
+  private readonly shadow:        ShadowExecutionEngine | null
   private readonly recentFills    = new RingBuffer<SimFill>(RECENT_FILLS_CAPACITY)
   private readonly fillsSeen      = new Set<string>()  // orderId set, prevent duplicate observation
 
@@ -71,12 +73,17 @@ export class LivePaperEngine {
       ? new OperationsEngine(this.sim, this.health)
       : null
 
+    this.shadow = config.shadowEnabled
+      ? new ShadowExecutionEngine(this.sim)
+      : null
+
     log.info('[LivePaperEngine] constructed', {
       strategies: strats.map(s => s.name).join('+'),
       latency:    latency.describe(),
       baseline:   config.liveBaselineFile || '(none)',
       recording:  config.liveSessionRecord,
       ops:        config.opsEnabled,
+      shadow:     config.shadowEnabled,
     })
   }
 
@@ -96,11 +103,13 @@ export class LivePaperEngine {
 
     if (this.recorder) this.recorder.start()
     if (this.ops)      this.ops.start()
+    if (this.shadow)   this.shadow.start()
     log.info('[LivePaperEngine] started')
   }
 
   stop(): void {
     if (!this.started) return
+    if (this.shadow)     this.shadow.stop()
     if (this.ops)        this.ops.stop()
     if (this.recorder)   this.recorder.stop()
     this.killSwitch.stop()
@@ -119,6 +128,7 @@ export class LivePaperEngine {
       killSwitch:  this.killSwitch.getStatus(),
       recentFills: this.recentFills.toArray(),
       ops:         this.ops?.snapshot() ?? null,
+      shadow:      this.shadow?.snapshot() ?? null,
     }
   }
 

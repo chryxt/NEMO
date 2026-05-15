@@ -64,6 +64,7 @@ async function main(): Promise<void> {
     validation:  config.validationMode,
     livePaper:   config.livePaperEnabled,
     ops:         config.opsEnabled,
+    shadow:      config.shadowEnabled,
   })
 
   // ── VALIDATION MODE ───────────────────────────────────────────────────────────

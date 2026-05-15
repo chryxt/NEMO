@@ -181,6 +181,25 @@ function buildConfig() {
     // CUSUM structural break detection
     opsCusumK:                 num('OPS_CUSUM_K', 2.0, 0),
     opsCusumH:                 num('OPS_CUSUM_H', 10.0, 0),
+
+    // ── Shadow Execution (Phase 8 — Real-Market Readiness) ───────────────────
+    // SUPERVISED, DRY-RUN ONLY. Requires LIVE_PAPER_ENABLED=true. There is NO
+    // code path that submits real orders. The wallet is address-only by
+    // default; signatures are explicitly labeled 'DRYRUN-' and cannot be
+    // mistaken for ECDSA signatures.
+    shadowEnabled:             bool('SHADOW_ENABLED', false),
+    shadowOutputDir:           str('SHADOW_OUTPUT_DIR', './shadow-output'),
+    shadowWalletEnabled:       bool('SHADOW_WALLET_ENABLED', false),
+    shadowWalletAddress:       str('SHADOW_WALLET_ADDRESS', ''),
+    shadowVerifyingContract:   str('SHADOW_VERIFYING_CONTRACT', ''),
+
+    // Sandbox guards
+    shadowMaxNotionalUsd:      num('SHADOW_MAX_NOTIONAL_USD', 100, 0),
+    shadowSingleStrategyLock:  str('SHADOW_SINGLE_STRATEGY_LOCK', ''),
+    shadowHaltFile:            str('SHADOW_HALT_FILE', ''),
+
+    // Approval mode
+    shadowAutoApprove:         bool('SHADOW_AUTO_APPROVE', false),
   } as const
 }
 

@@ -354,6 +354,30 @@ function renderLivePaper(paper: LivePaperSnapshot): string[] {
       `Heap: ${r.avgHeapMb.toFixed(0)}MB${flagStr}`,
     )
   }
+  if (paper.shadow) {
+    const sh = paper.shadow
+    const rd = sh.readiness
+    const sg = sh.sandbox
+    const sandboxFlags: string[] = []
+    if (sg.globalHaltActive)         sandboxFlags.push(chalk.red('HALT'))
+    if (!sg.walletEnabled)           sandboxFlags.push(chalk.gray('wallet:off'))
+    if (sg.singleStrategyLock)       sandboxFlags.push(chalk.yellow(`lock:${sg.singleStrategyLock}`))
+    sandboxFlags.push(chalk.gray(`cap:$${sg.maxNotionalUsd}`))
+    sandboxFlags.push(chalk.red('NO-LIVE-EXEC'))
+    lines.push(chalk.cyan('─── shadow ─────────────────────────────────────────────────────────────'))
+    lines.push(
+      `  Orders: ${sh.ordersGenerated} signed: ${sh.ordersSigned}  ` +
+      `Pending: ${sh.approvalsPending}  Approved: ${sh.approvalsApproved}  Rejected: ${sh.approvalsRejected}`,
+    )
+    lines.push(
+      `  Readiness: ${(rd.overallReadiness * 100).toFixed(0)}%  ` +
+      `Realism: ${(rd.fillRealismScore * 100).toFixed(0)}%  ` +
+      `OpStab: ${(rd.operationalStability * 100).toFixed(0)}%  ` +
+      `LatStab: ${(rd.latencyStability * 100).toFixed(0)}%  ` +
+      `RiskFlags: ${sh.operationalRisk.flagsLastHour}`,
+    )
+    lines.push(`  Audit: ${sh.auditEntries} entries  ${sandboxFlags.join(' ')}`)
+  }
   lines.push('')
   return lines
 }

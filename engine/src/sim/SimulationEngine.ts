@@ -235,6 +235,21 @@ export class SimulationEngine {
     this.openOrders.push(order)
     log.debug(`[Sim] SUBMIT ${order.id} ${order.symbol} ${order.outcome} ${order.side} ${order.size} ${order.type}@${order.limitPrice ?? 'mkt'} — ${order.reason}`)
 
+    bus.emit('sim.orderSubmitted', {
+      orderId:     order.id,
+      strategyId:  order.strategyId,
+      symbol:      order.symbol,
+      outcome:     order.outcome,
+      side:        order.side,
+      type:        order.type,
+      size:        order.size,
+      limitPrice:  order.limitPrice,
+      midAtSubmit: order.midAtSubmit,
+      tsSubmit:    order.tsSubmit,
+      windowTs:    order.windowTs,
+      reason:      order.reason,
+    })
+
     // Immediately try to process (handles 0-latency configurations)
     this.processOpenOrders()
   }

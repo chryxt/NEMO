@@ -4,6 +4,7 @@
 import type { PortfolioSnapshot, SimFill } from '../sim/types.js'
 import type { MarketRegime } from '../signals/types.js'
 import type { OpsSnapshot } from '../ops/types.js'
+import type { ShadowSnapshot } from '../shadow/types.js'
 
 // ── Baseline (loaded from a Phase 5 validation report) ───────────────────────
 
@@ -72,5 +73,6 @@ export interface LivePaperSnapshot {
   drift:          DriftReport
   killSwitch:     KillSwitchStatus
   recentFills:    SimFill[]   // last 5 for display
-  ops?:           OpsSnapshot | null   // present when Phase 7 ops engine is enabled
+  ops?:           OpsSnapshot | null      // present when Phase 7 ops engine is enabled
+  shadow?:        ShadowSnapshot | null   // present when Phase 8 shadow engine is enabled
 }
