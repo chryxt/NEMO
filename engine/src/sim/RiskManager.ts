@@ -20,6 +20,7 @@ const OK: RiskDecision = { ok: true, reason: '' }
 
 export class RiskManager {
   private killSwitch = false
+  private killReason = ''
 
   canSubmit(
     request:  OrderRequest,
@@ -74,10 +75,30 @@ export class RiskManager {
     if (portfolio.getConsecutiveLosses() >= config.simMaxConsecutiveLosses) {
       if (!this.killSwitch) {
         this.killSwitch = true
-        log.error(`[RiskManager] KILL-SWITCH activated after ${portfolio.getConsecutiveLosses()} consecutive losses (ts=${ts})`)
+        this.killReason = `${portfolio.getConsecutiveLosses()} consecutive losses`
+        log.error(`[RiskManager] KILL-SWITCH activated: ${this.killReason} (ts=${ts})`)
       }
     }
   }
 
+  // Externally trigger the kill-switch (Phase 6 multi-source). Idempotent.
+  triggerKill(reason: string): void {
+    if (!this.killSwitch) {
+      this.killSwitch = true
+      this.killReason = reason
+      log.error(`[RiskManager] KILL-SWITCH triggered externally: ${reason}`)
+    }
+  }
+
+  // Explicit one-way reset — never auto-resets.
+  resetKill(): void {
+    if (this.killSwitch) {
+      this.killSwitch = false
+      this.killReason = ''
+      log.info('[RiskManager] kill-switch reset')
+    }
+  }
+
   isKillSwitchActive(): boolean { return this.killSwitch }
+  getKillReason(): string { return this.killReason }
 }

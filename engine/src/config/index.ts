@@ -136,6 +136,24 @@ function buildConfig() {
     validationMcWhaleShiftMs:        num('VALIDATION_MC_WHALE_SHIFT_MS',     2_000, 0),
     validationMcSpreadStd:           num('VALIDATION_MC_SPREAD_STD',           0.1, 0),
     validationMcSlippageExtraBps:    num('VALIDATION_MC_SLIPPAGE_EXTRA_BPS',     5, 0),
+
+    // ── Live Paper Trading (Phase 6) ─────────────────────────────────────────
+    // Set LIVE_PAPER_ENABLED=true to run the simulation engine against live data.
+    // No real trades placed. Includes drift detection, health monitoring, and
+    // multi-source kill-switch.
+    livePaperEnabled:           bool('LIVE_PAPER_ENABLED', false),
+
+    // Drift baseline (JSON file path — see Phase 6 README)
+    liveBaselineFile:           str('LIVE_BASELINE_FILE', ''),
+
+    // Session recording (forensic JSONL with snapshots)
+    liveSessionRecord:          bool('LIVE_SESSION_RECORD', true),
+    liveSessionOutputDir:       str('LIVE_SESSION_OUTPUT_DIR', './live-sessions'),
+
+    // Kill-switch thresholds (0 = disabled)
+    liveKillSwitchVolatility:   num('LIVE_KILL_SWITCH_VOLATILITY',   0.001, 0),
+    liveKillSwitchLatencyMs:    num('LIVE_KILL_SWITCH_LATENCY_MS',   5_000, 0),
+    liveKillSwitchFile:         str('LIVE_KILL_SWITCH_FILE',         ''),
   } as const
 }
 

@@ -4,6 +4,7 @@ import { makeInitialState } from '../types/market.js'
 import type { GlobalState } from '../types/market.js'
 import type { MetricsEngine } from '../engines/MetricsEngine.js'
 import type { FeedHealthMonitor } from '../monitors/FeedHealthMonitor.js'
+import type { LivePaperEngine } from '../live/LivePaperEngine.js'
 import { config } from '../config/index.js'
 
 export class Terminal {
@@ -11,10 +12,14 @@ export class Terminal {
   private renderTimer: NodeJS.Timeout | null = null
   private lastRendered = ''
 
+  private livePaper: LivePaperEngine | null = null
+
   constructor(
     private readonly metrics: MetricsEngine,
     private readonly health: FeedHealthMonitor,
   ) {}
+
+  setLivePaper(lp: LivePaperEngine): void { this.livePaper = lp }
 
   start(): void {
     process.stdout.write('\x1B[?25l')
@@ -34,7 +39,12 @@ export class Terminal {
   }
 
   private draw(): void {
-    const frame = render(this.currentState, this.metrics.getMetrics(), this.health.getHealth())
+    const frame = render(
+      this.currentState,
+      this.metrics.getMetrics(),
+      this.health.getHealth(),
+      this.livePaper?.snapshot(),
+    )
     if (frame === this.lastRendered) return
 
     process.stdout.write('\x1B[H')

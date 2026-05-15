@@ -328,6 +328,12 @@ export class SimulationEngine {
     return { submitted: this.submitted, filled: this.filled, cancelled: this.cancelled, rejected: this.rejected }
   }
 
+  // ── Kill-switch passthrough (Phase 6) ─────────────────────────────────────
+  triggerKillSwitch(reason: string): void { this.risk.triggerKill(reason) }
+  resetKillSwitch():           void { this.risk.resetKill() }
+  isKillSwitchActive():        boolean { return this.risk.isKillSwitchActive() }
+  getKillSwitchReason():       string { return this.risk.getKillReason() }
+
   summary(): Record<string, unknown> {
     const s = this.portfolio.snapshot(this.risk.isKillSwitchActive())
     return {

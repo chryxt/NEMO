@@ -118,6 +118,16 @@ export interface SignalFrameEvent {
   latencyUs: number    // feature extraction time in microseconds
 }
 
+// ─── Drift Events (Phase 6 live paper) ────────────────────────────────────────
+
+export interface DriftAlertEvent {
+  metric:    string                          // 'spread' | 'signalsPerMin' | 'avgConfidence' | etc.
+  baseline:  number
+  current:   number
+  drift:     number                          // (current - baseline) / |baseline|
+  severity:  'info' | 'warning' | 'critical'
+}
+
 // ─── Event Bus Map ────────────────────────────────────────────────────────────
 
 export interface BusEvents {
@@ -137,4 +147,5 @@ export interface BusEvents {
   'system.degraded': SystemDegradedEvent
   'system.recovered': SystemRecoveredEvent
   'signal.frame': SignalFrameEvent
+  'drift.alert': DriftAlertEvent
 }

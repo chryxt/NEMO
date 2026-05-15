@@ -24,6 +24,7 @@ import { CompositeStrategy } from './strategies/CompositeStrategy.js'
 import { WhaleFollowStrategy } from './strategies/WhaleFollowStrategy.js'
 import { ExecutionAnalytics } from './research/ExecutionAnalytics.js'
 import { runValidationSuite } from './validation/ValidationOrchestrator.js'
+import { LivePaperEngine } from './live/LivePaperEngine.js'
 import type { Strategy } from './strategies/Strategy.js'
 import type { SignalFrame, MarketRegime } from './signals/types.js'
 import type { MarketSymbol } from './types/market.js'
@@ -61,6 +62,7 @@ async function main(): Promise<void> {
     signals:     config.signalsEnabled,
     simulation:  config.simulationMode,
     validation:  config.validationMode,
+    livePaper:   config.livePaperEnabled,
   })
 
   // ── VALIDATION MODE ───────────────────────────────────────────────────────────
@@ -312,13 +314,23 @@ async function main(): Promise<void> {
   }
 
   // Optional signal engine + observability
+  // LIVE_PAPER_ENABLED implies signals on (paper trading needs signal frames)
+  const signalsActive = config.signalsEnabled || config.livePaperEnabled
   let signalEngine:  SignalEngine  | null = null
   let signalObserver: SignalObserver | null = null
-  if (config.signalsEnabled) {
+  if (signalsActive) {
     signalEngine   = new SignalEngine()
     signalObserver = new SignalObserver()
     signalEngine.start()
     signalObserver.start()
+  }
+
+  // Optional live paper trading (Phase 6) — paper execution + drift + kill-switch
+  let livePaper: LivePaperEngine | null = null
+  if (config.livePaperEnabled) {
+    livePaper = new LivePaperEngine()
+    terminal.setLivePaper(livePaper)
+    livePaper.start()
   }
 
   const shutdown = (signal: string) => {
@@ -332,6 +344,7 @@ async function main(): Promise<void> {
     if (recorder)      recorder.stop()
     if (persistence)   persistence.stop()
     if (journal)       journal.stop()
+    if (livePaper)     livePaper.stop()
     if (signalEngine)  signalEngine.stop()
     const s = stateEngine.getState()
     log.info(`[main] last window: ${s.window.windowTs}  uptime: ${Math.floor(Date.now() / 1000) - s.startedAt}s`)

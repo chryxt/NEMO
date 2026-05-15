@@ -2,6 +2,7 @@ import chalk from 'chalk'
 import type { GlobalState, MarketSymbol, SymbolState } from '../types/market.js'
 import type { EngineMetrics } from '../engines/MetricsEngine.js'
 import type { FeedHealth, FeedStatus } from '../monitors/FeedHealthMonitor.js'
+import type { LivePaperSnapshot } from '../live/types.js'
 
 const W = 72  // terminal width
 
@@ -280,14 +281,66 @@ function renderFooter(state: GlobalState): string[] {
   ]
 }
 
+// ─── Live Paper (Phase 6) ─────────────────────────────────────────────────────
+
+function renderLivePaper(paper: LivePaperSnapshot): string[] {
+  const p = paper.portfolio
+  const h = paper.health
+  const k = paper.killSwitch
+  const d = paper.drift
+
+  const pnl     = p.totalEquity - p.startCash
+  const pnlPct  = p.startCash > 0 ? (pnl / p.startCash) * 100 : 0
+  const pnlStr  = pnl >= 0 ? chalk.green(`+$${pnl.toFixed(2)}`) : chalk.red(`-$${Math.abs(pnl).toFixed(2)}`)
+  const pctStr  = pnl >= 0 ? chalk.green(`(+${pnlPct.toFixed(2)}%)`) : chalk.red(`(${pnlPct.toFixed(2)}%)`)
+  const ddStr   = chalk.yellow(`${(p.drawdown * 100).toFixed(2)}%`)
+
+  const statusStr = k.active
+    ? chalk.red(`KILL-SWITCH (${k.triggeredBy ?? 'unknown'})`)
+    : chalk.green('ACTIVE')
+
+  const recentFillsLine = paper.recentFills.length > 0
+    ? paper.recentFills.slice(-3).map(f =>
+        `${f.symbol} ${f.outcome} ${f.side} @${f.price.toFixed(3)}`).join(' | ')
+    : '(no fills yet)'
+
+  const driftLine = d.hasBaseline
+    ? (d.metrics
+        .filter(m => m.severity !== 'info')
+        .slice(0, 3)
+        .map(m => `${m.metric} ${m.drift >= 0 ? '+' : ''}${(m.drift * 100).toFixed(0)}%${m.severity === 'critical' ? '!' : ''}`)
+        .join(' ') || chalk.green('within baseline'))
+    : chalk.gray('(no baseline)')
+
+  return [
+    chalk.cyan('═══ LIVE PAPER ' + '═'.repeat(57)),
+    `  Status: ${statusStr}${k.reason ? '  ' + chalk.gray(`(${k.reason.slice(0, 50)})`) : ''}`,
+    `  Cash: $${p.cash.toFixed(2)}  Equity: $${p.totalEquity.toFixed(2)}  PnL: ${pnlStr} ${pctStr}  DD: ${ddStr}`,
+    `  Open: ${p.openPositions}  Trades: ${p.winners}W/${p.losers}L (${(p.winRate * 100).toFixed(1)}%)  ` +
+      `Signals/min: ${h.signalsPerMin.toFixed(1)}  Conf: ${h.avgConfidence.toFixed(2)}`,
+    `  Latency p99: ${h.p99ComputeLatencyUs.toFixed(0)}µs  ` +
+      `Flips: ${h.directionFlipsLast5Min}  ` +
+      `RegimeTrans: ${h.regimeTransitionsLast5Min}  ` +
+      `Drift: ${driftLine}`,
+    `  Recent: ${recentFillsLine}`,
+    '',
+  ]
+}
+
 // ─── Main Render ──────────────────────────────────────────────────────────────
 
-export function render(state: GlobalState, metrics: EngineMetrics, health: FeedHealth): string {
+export function render(
+  state:   GlobalState,
+  metrics: EngineMetrics,
+  health:  FeedHealth,
+  paper?:  LivePaperSnapshot,
+): string {
   const sections = [
     ...renderHeader(state),
     '',
     ...renderPriceTable(state),
     ...renderWhales(state),
+    ...(paper ? renderLivePaper(paper) : []),
     ...renderMetrics(metrics),
     ...renderHealth(health),
     ...renderFooter(state),
