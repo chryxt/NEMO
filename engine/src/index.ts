@@ -10,26 +10,41 @@ import { FeedHealthMonitor } from './monitors/FeedHealthMonitor.js'
 import { Terminal } from './terminal/Terminal.js'
 import { EventRecorder } from './replay/EventRecorder.js'
 import { EventReplayer } from './replay/EventReplayer.js'
+import { PersistenceEngine } from './engines/PersistenceEngine.js'
+import { DbJournalWriter } from './persistence/DbJournalWriter.js'
+import { DbReplayer } from './replay/DbReplayer.js'
+import { runMigration } from './db/migrate.js'
+import { closePool } from './db/pool.js'
+
+function resolveMode(): 'db-replay' | 'file-replay' | 'live' {
+  if (config.dbReplayFrom)  return 'db-replay'
+  if (config.replayFile)    return 'file-replay'
+  return 'live'
+}
 
 async function main(): Promise<void> {
+  const mode = resolveMode()
+
   log.info('=== Polymarket Microstructure Engine starting ===', {
-    mode:     config.replayFile ? 'REPLAY' : config.recordEvents ? 'RECORD+LIVE' : 'LIVE',
-    logLevel: config.logLevel,
-    nodeEnv:  config.nodeEnv,
+    mode:        mode.toUpperCase(),
+    logLevel:    config.logLevel,
+    nodeEnv:     config.nodeEnv,
+    persistence: config.persistenceEnabled,
+    journal:     config.journalEnabled,
   })
 
   const metricsEngine = new MetricsEngine()
   const healthMonitor = new FeedHealthMonitor()
   const terminal      = new Terminal(metricsEngine, healthMonitor)
 
-  // ── REPLAY MODE ─────────────────────────────────────────────────────────────
-  if (config.replayFile) {
+  // ── FILE REPLAY MODE ──────────────────────────────────────────────────────────
+  if (mode === 'file-replay') {
     const clobClient  = new ClobClient()
     const stateEngine = new StateEngine(clobClient)
-    const replayer    = new EventReplayer(config.replayFile, config.replaySpeed)
+    const replayer    = new EventReplayer(config.replayFile!, config.replaySpeed)
 
     const shutdown = () => {
-      log.info('[main] shutting down (replay mode)')
+      log.info('[main] shutting down (file-replay mode)')
       terminal.stop()
       metricsEngine.stop()
       healthMonitor.stop()
@@ -46,7 +61,6 @@ async function main(): Promise<void> {
 
     replayer.start()
       .then(() => {
-        // Log final state hash for determinism verification
         const hash     = stateEngine.getStateHash()
         const expected = config.expectedStateHash
 
@@ -68,18 +82,86 @@ async function main(): Promise<void> {
     return
   }
 
-  // ── LIVE MODE ────────────────────────────────────────────────────────────────
+  // ── DB REPLAY MODE ────────────────────────────────────────────────────────────
+  if (mode === 'db-replay') {
+    const clobClient  = new ClobClient()
+    const stateEngine = new StateEngine(clobClient)
+    const replayer    = new DbReplayer({
+      from:  new Date(config.dbReplayFrom!),
+      to:    config.dbReplayTo ? new Date(config.dbReplayTo) : undefined,
+      speed: config.replaySpeed,
+    })
+
+    const shutdown = () => {
+      log.info('[main] shutting down (db-replay mode)')
+      terminal.stop()
+      metricsEngine.stop()
+      healthMonitor.stop()
+      void closePool()
+      log.flush()
+      process.exit(0)
+    }
+    process.on('SIGINT',  () => shutdown())
+    process.on('SIGTERM', () => shutdown())
+
+    metricsEngine.start()
+    healthMonitor.start()
+    stateEngine.start()
+    terminal.start()
+
+    replayer.start()
+      .then(() => {
+        const hash     = stateEngine.getStateHash()
+        const expected = config.expectedStateHash
+
+        if (expected) {
+          if (hash === expected) {
+            log.info(`[DbReplay] state hash VERIFIED ✓  ${hash}`)
+          } else {
+            log.error(`[DbReplay] state hash MISMATCH — got ${hash}, expected ${expected}`)
+          }
+        } else {
+          log.info(`[DbReplay] final state hash: ${hash}`)
+          log.info(`[DbReplay] set EXPECTED_STATE_HASH=${hash} to verify determinism on next run`)
+        }
+        log.info(`[DbReplay] mutations: ${stateEngine.getMutationCount()}`)
+      })
+      .catch((err: unknown) =>
+        log.error(`[DbReplayer] fatal: ${err instanceof Error ? err.message : String(err)}`)
+      )
+    return
+  }
+
+  // ── LIVE MODE ─────────────────────────────────────────────────────────────────
   const clobClient  = new ClobClient()
   const rtdsClient  = new RtdsClient()
   const clockEngine = new MarketClockEngine()
   const stateEngine = new StateEngine(clobClient)
 
-  // Optional recorder
+  // Optional file recorder
   let recorder: EventRecorder | null = null
   if (config.recordEvents) {
     const ts = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19)
     recorder = new EventRecorder(`./recordings/${ts}.jsonl`)
     recorder.start()
+  }
+
+  // Optional persistence layer (requires DATABASE_URL)
+  let persistence: PersistenceEngine | null = null
+  let journal:     DbJournalWriter    | null = null
+  if (config.persistenceEnabled) {
+    if (!config.dbUrl) {
+      log.error('[main] PERSISTENCE_ENABLED=true but DATABASE_URL is not set — aborting')
+      process.exit(1)
+    }
+    await runMigration()
+    persistence = new PersistenceEngine(metricsEngine)
+    persistence.start()
+
+    if (config.journalEnabled) {
+      journal = new DbJournalWriter()
+      journal.start()
+    }
   }
 
   const shutdown = (signal: string) => {
@@ -90,10 +172,14 @@ async function main(): Promise<void> {
     clockEngine.stop()
     metricsEngine.stop()
     healthMonitor.stop()
-    if (recorder) recorder.stop()
+    if (recorder)    recorder.stop()
+    if (persistence) persistence.stop()
+    if (journal)     journal.stop()
     const s = stateEngine.getState()
     log.info(`[main] last window: ${s.window.windowTs}  uptime: ${Math.floor(Date.now() / 1000) - s.startedAt}s`)
     log.info(`[main] final state hash: ${stateEngine.getStateHash()}  mutations: ${stateEngine.getMutationCount()}`)
+    if (persistence) log.info('[main] persistence metrics:', persistence.getPersistenceMetrics())
+    void closePool()
     log.flush()
     process.exit(0)
   }

@@ -59,6 +59,25 @@ function buildConfig() {
 
     // Memory pressure warning threshold (MB)
     memoryWarnMb: num('MEMORY_WARN_MB', 200, 50),
+
+    // ── Database ─────────────────────────────────────────────────────────────
+    dbUrl:     str('DATABASE_URL', ''),
+    dbPoolMin: num('DB_POOL_MIN', 2, 1),
+    dbPoolMax: num('DB_POOL_MAX', 10, 1),
+
+    // ── Persistence Engine ────────────────────────────────────────────────────
+    persistenceEnabled:   bool('PERSISTENCE_ENABLED',   false),
+    persistenceBatchSize: num('PERSISTENCE_BATCH_SIZE',  200, 1),
+    persistenceFlushMs:   num('PERSISTENCE_FLUSH_MS',    500, 100),
+    persistenceQueueMax:  num('PERSISTENCE_QUEUE_MAX',  5_000, 100),
+    persistenceQueueWarn: num('PERSISTENCE_QUEUE_WARN', 1_000, 100),
+
+    // ── Event Journal (requires persistenceEnabled) ───────────────────────────
+    journalEnabled: bool('JOURNAL_ENABLED', false),
+
+    // ── DB Replay ─────────────────────────────────────────────────────────────
+    dbReplayFrom: process.env['DB_REPLAY_FROM'] ?? null,   // ISO timestamp
+    dbReplayTo:   process.env['DB_REPLAY_TO']   ?? null,   // ISO timestamp (optional)
   } as const
 }
 
