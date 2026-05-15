@@ -23,11 +23,14 @@ import { LatencyModel } from './sim/LatencyModel.js'
 import { CompositeStrategy } from './strategies/CompositeStrategy.js'
 import { WhaleFollowStrategy } from './strategies/WhaleFollowStrategy.js'
 import { ExecutionAnalytics } from './research/ExecutionAnalytics.js'
+import { runValidationSuite } from './validation/ValidationOrchestrator.js'
 import type { Strategy } from './strategies/Strategy.js'
 import type { SignalFrame, MarketRegime } from './signals/types.js'
 import type { MarketSymbol } from './types/market.js'
+import type { Suite } from './validation/ValidationOrchestrator.js'
 
-function resolveMode(): 'simulation' | 'research' | 'db-replay' | 'file-replay' | 'live' {
+function resolveMode(): 'validation' | 'simulation' | 'research' | 'db-replay' | 'file-replay' | 'live' {
+  if (config.validationMode) return 'validation'
   if (config.simulationMode) return 'simulation'
   if (config.researchMode)   return 'research'
   if (config.dbReplayFrom)   return 'db-replay'
@@ -57,7 +60,29 @@ async function main(): Promise<void> {
     journal:     config.journalEnabled,
     signals:     config.signalsEnabled,
     simulation:  config.simulationMode,
+    validation:  config.validationMode,
   })
+
+  // ── VALIDATION MODE ───────────────────────────────────────────────────────────
+  // Phase 5: parameter sweep, walk-forward, Monte Carlo, scenarios, comparison.
+  if (mode === 'validation') {
+    if (!config.replayFile) {
+      log.error('[main] VALIDATION_MODE=true requires REPLAY_FILE to be set')
+      process.exit(1)
+    }
+    const suite = config.validationSuite as Suite
+    if (!['sweep', 'walk-forward', 'monte-carlo', 'scenarios', 'compare', 'full'].includes(suite)) {
+      log.error(`[main] invalid VALIDATION_SUITE: ${suite}`)
+      process.exit(1)
+    }
+    await runValidationSuite({
+      replayFile: config.replayFile,
+      suite,
+      outputDir:  config.validationOutputDir,
+    })
+    log.flush()
+    process.exit(0)
+  }
 
   // ── SIMULATION MODE ───────────────────────────────────────────────────────────
   // Replay-driven paper execution: replay + signals + strategy + fills + analytics

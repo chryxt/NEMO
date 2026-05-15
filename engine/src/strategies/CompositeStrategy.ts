@@ -1,14 +1,15 @@
 /**
- * Composite signal strategy.
+ * Composite signal strategy — parameterized.
  *
  * Enters when:
- *   - composite confidence > minConfidence
- *   - composite agreement   > minAgreement
+ *   - composite.confidence > minConfidence
+ *   - composite.agreement  > minAgreement
  *   - non-neutral direction
  *   - no existing position for (symbol, outcome, window)
+ *   - >= minSecondsBeforeClose seconds remain in window
  *
- * Exits on window settlement (handled by Portfolio.settleWindow).
- * Uses IOC orders to avoid stale resting orders.
+ * All parameters default to config values for backward compatibility.
+ * Validation framework instantiates with explicit params for sweeps.
  */
 import { config } from '../config/index.js'
 import type { Strategy } from './Strategy.js'
@@ -16,33 +17,47 @@ import type { SignalFrame } from '../signals/types.js'
 import type { Portfolio } from '../sim/Portfolio.js'
 import type { OrderRequest, Outcome } from '../sim/types.js'
 
-const ENTRY_SIZE       = 100   // shares per entry — $50–$70 depending on price
-const PRICE_SLACK_BPS  = 50    // 0.50% above ask we're willing to pay
+export interface CompositeStrategyParams {
+  minConfidence?:         number   // default: config.simMinConfidence
+  minAgreement?:          number   // default: 0.6
+  entrySize?:             number   // default: 100 shares
+  priceSlackBps?:         number   // default: 50 (0.50% above ask)
+  minSecondsBeforeClose?: number   // default: 15
+}
 
 export class CompositeStrategy implements Strategy {
   readonly name = 'composite'
 
+  private readonly minConfidence:        number
+  private readonly minAgreement:         number
+  private readonly entrySize:            number
+  private readonly priceSlackBps:        number
+  private readonly minSecondsBeforeClose:number
+
+  constructor(params: CompositeStrategyParams = {}) {
+    this.minConfidence         = params.minConfidence         ?? config.simMinConfidence
+    this.minAgreement          = params.minAgreement          ?? 0.6
+    this.entrySize             = params.entrySize             ?? 100
+    this.priceSlackBps         = params.priceSlackBps         ?? 50
+    this.minSecondsBeforeClose = params.minSecondsBeforeClose ?? 15
+  }
+
   onSignal(frame: SignalFrame, portfolio: Portfolio, _nowMs: number): OrderRequest | null {
     const { composite, features } = frame
 
-    if (composite.confidence < config.simMinConfidence) return null
-    if (composite.direction === 'neutral')              return null
-    if (composite.agreement < 0.6)                       return null
+    if (composite.confidence < this.minConfidence) return null
+    if (composite.direction === 'neutral')          return null
+    if (composite.agreement < this.minAgreement)    return null
 
     const outcome: Outcome = composite.direction === 'up' ? 'up' : 'down'
 
-    // Already in position for this symbol+outcome+window
-    const windowTs = features.window.windowTs
-    if (portfolio.getPosition(frame.symbol, outcome, windowTs)) return null
+    if (portfolio.getPosition(frame.symbol, outcome, features.window.windowTs)) return null
+    if (features.window.secondsToClose < this.minSecondsBeforeClose) return null
 
-    // Don't enter in the last 15 seconds — not enough time to capture move
-    if (features.window.secondsToClose < 15) return null
-
-    // Need a quote to set a sane limit price
     const ask = features.quotes.ask
     if (ask == null) return null
 
-    const limitPrice = Math.min(0.99, ask * (1 + PRICE_SLACK_BPS / 10_000))
+    const limitPrice = Math.min(0.99, ask * (1 + this.priceSlackBps / 10_000))
 
     return {
       strategyId: this.name,
@@ -50,7 +65,7 @@ export class CompositeStrategy implements Strategy {
       outcome,
       side:       'BUY',
       type:       'IOC',
-      size:       ENTRY_SIZE,
+      size:       this.entrySize,
       limitPrice,
       reason:     `composite=${composite.value.toFixed(2)} conf=${composite.confidence.toFixed(2)} agree=${composite.agreement.toFixed(2)} regime=${frame.regime}`,
     }

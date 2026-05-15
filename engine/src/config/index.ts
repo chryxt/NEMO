@@ -118,6 +118,24 @@ function buildConfig() {
     // Strategy thresholds
     simMinConfidence:   num('SIM_MIN_CONFIDENCE',   0.60, 0),
     simMinWhaleSizeUsd: num('SIM_MIN_WHALE_SIZE_USD', 10_000, 0),
+
+    // ── Validation (Phase 5) ─────────────────────────────────────────────────
+    validationMode:        bool('VALIDATION_MODE', false),
+    validationSuite:       str('VALIDATION_SUITE', 'full'),  // sweep|walk-forward|monte-carlo|scenarios|compare|full
+    validationOutputDir:   str('VALIDATION_OUTPUT_DIR', './validation-output'),
+
+    // Walk-forward
+    validationWfWindowMs:      num('VALIDATION_WF_WINDOW_MS',     30 * 60_000, 60_000),  // 30 min
+    validationWfTrainFraction: num('VALIDATION_WF_TRAIN_FRACTION', 0.7, 0.1),
+    validationWfStepMs:        num('VALIDATION_WF_STEP_MS',       15 * 60_000, 60_000),  // 15 min
+
+    // Monte Carlo
+    validationMcRuns:                num('VALIDATION_MC_RUNS',                  50, 1),
+    validationMcBaseSeed:            num('VALIDATION_MC_BASE_SEED',             42, 0),
+    validationMcLatencyJitterMs:     num('VALIDATION_MC_LATENCY_JITTER_MS',     10, 0),
+    validationMcWhaleShiftMs:        num('VALIDATION_MC_WHALE_SHIFT_MS',     2_000, 0),
+    validationMcSpreadStd:           num('VALIDATION_MC_SPREAD_STD',           0.1, 0),
+    validationMcSlippageExtraBps:    num('VALIDATION_MC_SLIPPAGE_EXTRA_BPS',     5, 0),
   } as const
 }
 

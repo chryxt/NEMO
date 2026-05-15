@@ -38,6 +38,15 @@ class EventBus {
   off<K extends keyof BusEvents>(event: K, listener: Listener<BusEvents[K]>): void {
     this.emitter.off(event as string, listener as (...args: unknown[]) => void)
   }
+
+  // Remove every listener and tap. Used by the validation framework between
+  // isolated simulation runs so leftover handlers from a prior run cannot
+  // affect the next one.
+  reset(): void {
+    this.emitter.removeAllListeners()
+    this.tapFn  = null
+    this.tapFns.length = 0
+  }
 }
 
 export const bus = new EventBus()

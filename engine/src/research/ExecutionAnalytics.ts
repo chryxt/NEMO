@@ -20,7 +20,11 @@ export class ExecutionAnalytics {
     private readonly outputDir: string,
     private readonly sessionId: string,
   ) {
-    mkdirSync(outputDir, { recursive: true })
+    // Directory is created lazily on first export — produce() alone has no IO.
+  }
+
+  private ensureDir(): void {
+    mkdirSync(this.outputDir, { recursive: true })
   }
 
   produce(
@@ -120,6 +124,7 @@ export class ExecutionAnalytics {
   }
 
   async exportFills(fills: readonly SimFill[]): Promise<string> {
+    this.ensureDir()
     const path = join(this.outputDir, `${this.sessionId}_fills.csv`)
     await new Promise<void>((resolve, reject) => {
       const ws = createWriteStream(path)
@@ -140,6 +145,7 @@ export class ExecutionAnalytics {
   }
 
   async exportReport(report: ExecutionReport): Promise<string> {
+    this.ensureDir()
     const path = join(this.outputDir, `${this.sessionId}_execution.json`)
     await new Promise<void>((resolve, reject) => {
       const ws = createWriteStream(path)
