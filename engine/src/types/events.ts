@@ -1,0 +1,266 @@
+import type { MarketSymbol, MarketWindow, GlobalState, WhaleTrade } from './market'
+import type { SignalFrame } from '../signals/types'
+
+// ─── RTDS Events ─────────────────────────────────────────────────────────────
+
+export interface OraclePriceEvent {
+  symbol: MarketSymbol
+  price: number
+  ts: number          // Unix milliseconds from Chainlink
+  source: 'chainlink' | 'binance'
+}
+
+export interface ActivityTradeEvent {
+  conditionId: string
+  eventSlug: string
+  outcome: string
+  outcomeIndex: number
+  side: 'BUY' | 'SELL'
+  sizeShares: number
+  price: number
+  wallet: string
+  pseudonym: string | null
+  ts: number
+  txHash: string
+}
+
+// ─── CLOB Events ─────────────────────────────────────────────────────────────
+
+export interface ClobBookEvent {
+  tokenId: string
+  bids: Array<{ price: number; size: number }>
+  asks: Array<{ price: number; size: number }>
+  ts: number
+}
+
+export interface ClobBestBidAskEvent {
+  tokenId: string
+  bid: number
+  ask: number
+  ts: number
+}
+
+export interface ClobPriceChangeEvent {
+  tokenId: string
+  price: number
+  size: number
+  side: 'BUY' | 'SELL'
+  bestBid: number
+  bestAsk: number
+  ts: number
+}
+
+export interface ClobLastTradeEvent {
+  tokenId: string
+  price: number
+  size: number
+  side: 'BUY' | 'SELL'
+  ts: number
+}
+
+export interface ClobTickSizeChangeEvent {
+  tokenId: string
+  tickSize: number
+  ts: number
+}
+
+// ─── Market Clock Events ──────────────────────────────────────────────────────
+
+export interface MarketTickEvent {
+  window: MarketWindow
+  nowSec: number   // logical clock second — use this instead of Date.now() for determinism
+}
+
+export interface MarketWindowOpenEvent {
+  windowTs: number
+  closeTs: number
+  tokenIds: Record<MarketSymbol, { up: string | null; down: string | null }>
+}
+
+// ─── State Events ─────────────────────────────────────────────────────────────
+
+export interface StateSnapshotEvent {
+  state: GlobalState
+}
+
+export interface WhaleAlertEvent {
+  trade: WhaleTrade
+}
+
+// ─── Connection Events ────────────────────────────────────────────────────────
+
+export interface ConnectionEvent {
+  service: 'rtds' | 'clob'
+  status: 'connecting' | 'connected' | 'reconnecting' | 'dead'
+  attempt?: number
+}
+
+// ─── System Health Events ─────────────────────────────────────────────────────
+
+export interface SystemWarningEvent {
+  source: string    // e.g. "BTC oracle", "CLOB orderbook"
+  message: string
+  staleSecs: number
+}
+
+export interface SystemDegradedEvent {
+  reason: string
+}
+
+export interface SystemRecoveredEvent {
+  source: string    // e.g. "BTC oracle", "CLOB orderbook"
+}
+
+// ─── Signal Events ────────────────────────────────────────────────────────────
+
+export interface SignalFrameEvent {
+  frame:     SignalFrame
+  latencyUs: number    // feature extraction time in microseconds
+}
+
+// ─── Drift Events (Phase 6 live paper) ────────────────────────────────────────
+
+export interface DriftAlertEvent {
+  metric:    string                          // 'spread' | 'signalsPerMin' | 'avgConfidence' | etc.
+  baseline:  number
+  current:   number
+  drift:     number                          // (current - baseline) / |baseline|
+  severity:  'info' | 'warning' | 'critical'
+}
+
+// ─── Sim Events (additive — Phase 8 observation seam) ─────────────────────────
+
+export interface SimOrderSubmittedEvent {
+  orderId:     string
+  strategyId:  string
+  symbol:      MarketSymbol
+  outcome:     'up' | 'down'
+  side:        'BUY' | 'SELL'
+  type:        'MARKET' | 'LIMIT' | 'IOC' | 'FOK'
+  size:        number
+  limitPrice:  number | null
+  midAtSubmit: number | null
+  tsSubmit:    number
+  windowTs:    number
+  reason:      string
+}
+
+// ─── Ops Events (Phase 7 long-run operations) ─────────────────────────────────
+
+export interface OpsDailyReportEvent {
+  dateUtc:  string
+  path:     string                            // file path of the JSON report
+}
+
+export interface OpsStrategyDegradedEvent {
+  reason:   string
+  sharpe:   number
+  signalsPerMinRatio: number                  // current / baseline
+}
+
+export interface OpsStructuralBreakEvent {
+  metric:    string
+  cusum:     number
+  threshold: number
+}
+
+export interface OpsReconnectStormEvent {
+  service:  'rtds' | 'clob'
+  count:    number
+  windowMs: number
+}
+
+// ─── Shadow Events (Phase 8 supervised real-execution readiness) ──────────────
+
+export interface ShadowApprovalRequestEvent {
+  id:           string
+  simOrderId:   string
+  notionalUsd:  number
+  expiresAtMs:  number
+}
+
+export interface ShadowApprovalDecisionEvent {
+  id:        string
+  approved:  boolean
+  operator:  string
+  reason:    string
+}
+
+export interface ShadowRiskFlagEvent {
+  kind:    'signing-failure'
+        |  'nonce-desync'
+        |  'rpc-instability'
+        |  'gas-anomaly'
+        |  'exchange-api-degraded'
+        |  'websocket-divergence'
+  detail:  string
+}
+
+export interface ShadowHaltEvent {
+  reason:  string
+  source:  'manual-file' | 'sandbox-guard' | 'risk-escalation'
+}
+
+// ─── Execution Events (Phase 9 controlled micro-live execution) ───────────────
+
+export interface ExecutionSubmittedEvent {
+  executionOrderId: string
+  shadowOrderId:    string
+  remoteOrderId:    string
+  dryRun:           boolean
+  notionalUsd:      number
+}
+
+export interface ExecutionConfirmedEvent {
+  executionOrderId: string
+  realizedPrice:    number | null
+  realizedFeeUsd:   number | null
+  priceDeltaBps:    number | null
+  latencyMs:        number | null
+}
+
+export interface ExecutionFailedEvent {
+  shadowOrderId: string
+  reason:        string
+}
+
+export interface ExecutionHaltActivatedEvent {
+  source:  'operator-console' | 'halt-file' | 'rpc-degraded'
+        |  'nonce-desync'     | 'sim-kill-switch' | 'manual-api'
+  reason:  string
+}
+
+// ─── Event Bus Map ────────────────────────────────────────────────────────────
+
+export interface BusEvents {
+  'oracle.price': OraclePriceEvent
+  'trade.activity': ActivityTradeEvent
+  'clob.book': ClobBookEvent
+  'clob.bestBidAsk': ClobBestBidAskEvent
+  'clob.priceChange': ClobPriceChangeEvent
+  'clob.lastTrade': ClobLastTradeEvent
+  'clob.tickSizeChange': ClobTickSizeChangeEvent
+  'market.tick': MarketTickEvent
+  'market.windowOpen': MarketWindowOpenEvent
+  'state.snapshot': StateSnapshotEvent
+  'whale.alert': WhaleAlertEvent
+  'connection.change': ConnectionEvent
+  'system.warning': SystemWarningEvent
+  'system.degraded': SystemDegradedEvent
+  'system.recovered': SystemRecoveredEvent
+  'signal.frame': SignalFrameEvent
+  'drift.alert': DriftAlertEvent
+  'ops.dailyReport':     OpsDailyReportEvent
+  'ops.strategyDegraded':OpsStrategyDegradedEvent
+  'ops.structuralBreak': OpsStructuralBreakEvent
+  'ops.reconnectStorm':  OpsReconnectStormEvent
+  'sim.orderSubmitted':         SimOrderSubmittedEvent
+  'shadow.approvalRequest':     ShadowApprovalRequestEvent
+  'shadow.approvalDecision':    ShadowApprovalDecisionEvent
+  'shadow.riskFlag':            ShadowRiskFlagEvent
+  'shadow.halt':                ShadowHaltEvent
+  'execution.submitted':        ExecutionSubmittedEvent
+  'execution.confirmed':        ExecutionConfirmedEvent
+  'execution.failed':           ExecutionFailedEvent
+  'execution.haltActivated':    ExecutionHaltActivatedEvent
+}
