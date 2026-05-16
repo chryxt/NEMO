@@ -11,13 +11,13 @@
  * All shutdown actions route through the existing kill-switch via
  * SimulationEngine.triggerKillSwitch — we do NOT introduce a parallel path.
  */
-import { bus } from '../bus/EventBus.js'
-import { log } from '../utils/logger.js'
-import { config } from '../config/index.js'
-import type { SimulationEngine } from '../sim/SimulationEngine.js'
-import type { EdgePersistenceTracker } from './EdgePersistence.js'
-import type { ReliabilityMonitor } from './ReliabilityMonitor.js'
-import type { OperationalSafetyStatus } from './types.js'
+import { bus } from '../bus/EventBus'
+import { log } from '../utils/logger'
+import { config } from '../config/index'
+import type { SimulationEngine } from '../sim/SimulationEngine'
+import type { EdgePersistenceTracker } from './EdgePersistence'
+import type { ReliabilityMonitor } from './ReliabilityMonitor'
+import type { OperationalSafetyStatus } from './types'
 
 const CHECK_INTERVAL_MS    = 10_000
 const MEMORY_SUSTAIN_MS    = 60_000

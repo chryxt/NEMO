@@ -11,28 +11,28 @@
  * any network call to Polymarket — orders are signed for real with viem
  * but the POST is bypassed by PolymarketClient.
  */
-import { bus } from '../bus/EventBus.js'
-import { log } from '../utils/logger.js'
-import { config } from '../config/index.js'
-import { RingBuffer } from '../utils/RingBuffer.js'
-import { SecureWallet, SecureSecret } from './SecureWallet.js'
-import { RealEIP712Signer } from './RealEIP712Signer.js'
-import { PolymarketClient } from './PolymarketClient.js'
-import { NonceManager } from './NonceManager.js'
-import { RpcHealthMonitor } from './RpcHealthMonitor.js'
-import { ExecutionConstraints } from './ExecutionConstraints.js'
-import { FillVerifier } from './FillVerifier.js'
-import { ExecutionJournal } from './ExecutionJournal.js'
-import { OperatorConsole } from './OperatorConsole.js'
-import { EmergencyHalt } from './EmergencyHalt.js'
+import { bus } from '../bus/EventBus'
+import { log } from '../utils/logger'
+import { config } from '../config/index'
+import { RingBuffer } from '../utils/RingBuffer'
+import { SecureWallet, SecureSecret } from './SecureWallet'
+import { RealEIP712Signer } from './RealEIP712Signer'
+import { PolymarketClient } from './PolymarketClient'
+import { NonceManager } from './NonceManager'
+import { RpcHealthMonitor } from './RpcHealthMonitor'
+import { ExecutionConstraints } from './ExecutionConstraints'
+import { FillVerifier } from './FillVerifier'
+import { ExecutionJournal } from './ExecutionJournal'
+import { OperatorConsole } from './OperatorConsole'
+import { EmergencyHalt } from './EmergencyHalt'
 import type { Hex } from 'viem'
-import type { SimulationEngine } from '../sim/SimulationEngine.js'
-import type { ApprovalQueue } from '../shadow/ApprovalQueue.js'
-import type { ShadowOrder } from '../shadow/types.js'
+import type { SimulationEngine } from '../sim/SimulationEngine'
+import type { ApprovalQueue } from '../shadow/ApprovalQueue'
+import type { ShadowOrder } from '../shadow/types'
 import type {
   ExecutionOrder, GatewayDecision, GateStep, ExecutionGatewaySnapshot,
   ExecutionDelta, OperatorAction,
-} from './types.js'
+} from './types'
 
 const RECENT_DECISIONS = 10
 const POLY_VERIFYING_CONTRACT = '0x4bFb41d5B3570DeFd03C39a9A4D8dE6Bd8B8982E'

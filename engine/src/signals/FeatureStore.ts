@@ -1,6 +1,6 @@
-import { RingBuffer } from '../utils/RingBuffer.js'
-import { SLUG_PREFIX } from '../types/market.js'
-import type { MarketSymbol } from '../types/market.js'
+import { RingBuffer } from '../utils/RingBuffer'
+import { SLUG_PREFIX } from '../types/market'
+import type { MarketSymbol } from '../types/market'
 import type {
   OraclePriceEvent,
   ActivityTradeEvent,
@@ -11,7 +11,7 @@ import type {
   WhaleAlertEvent,
   MarketTickEvent,
   MarketWindowOpenEvent,
-} from '../types/events.js'
+} from '../types/events'
 
 // ── Raw history entries ───────────────────────────────────────────────────────
 

@@ -11,7 +11,7 @@ import { createHash } from 'crypto'
 import { createWriteStream, mkdirSync } from 'fs'
 import type { WriteStream } from 'fs'
 import { join } from 'path'
-import { log } from '../utils/logger.js'
+import { log } from '../utils/logger'
 
 const ZERO_HASH = '0'.repeat(64)
 

@@ -12,12 +12,12 @@
 import { createWriteStream, mkdirSync } from 'fs'
 import type { WriteStream } from 'fs'
 import { join } from 'path'
-import { bus } from '../bus/EventBus.js'
-import { log } from '../utils/logger.js'
-import type { SimulationEngine } from '../sim/SimulationEngine.js'
-import type { StrategyHealthMonitor } from './StrategyHealth.js'
-import type { DriftDetector } from './DriftDetector.js'
-import type { KillSwitchController } from './KillSwitchController.js'
+import { bus } from '../bus/EventBus'
+import { log } from '../utils/logger'
+import type { SimulationEngine } from '../sim/SimulationEngine'
+import type { StrategyHealthMonitor } from './StrategyHealth'
+import type { DriftDetector } from './DriftDetector'
+import type { KillSwitchController } from './KillSwitchController'
 
 const FLUSH_EVERY        = 1_000     // events
 const FLUSH_INTERVAL_MS  = 5_000

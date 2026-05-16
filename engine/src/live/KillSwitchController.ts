@@ -9,12 +9,12 @@
  * exposed via bus to keep accidents impossible).
  */
 import { existsSync } from 'fs'
-import { bus } from '../bus/EventBus.js'
-import { log } from '../utils/logger.js'
-import { config } from '../config/index.js'
-import { RingBuffer } from '../utils/RingBuffer.js'
-import type { SimulationEngine } from '../sim/SimulationEngine.js'
-import type { KillSwitchStatus } from './types.js'
+import { bus } from '../bus/EventBus'
+import { log } from '../utils/logger'
+import { config } from '../config/index'
+import { RingBuffer } from '../utils/RingBuffer'
+import type { SimulationEngine } from '../sim/SimulationEngine'
+import type { KillSwitchStatus } from './types'
 
 const VOLATILITY_WINDOW_MS = 30_000   // sustained period before trigger
 const LATENCY_WINDOW_MS    = 60_000

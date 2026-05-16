@@ -1,8 +1,8 @@
-import { bus } from '../bus/EventBus.js'
-import { log } from '../utils/logger.js'
-import { SYMBOLS, SLUG_PREFIX } from '../types/market.js'
-import type { MarketSymbol } from '../types/market.js'
-import type { MarketWindowOpenEvent } from '../types/events.js'
+import { bus } from '../bus/EventBus'
+import { log } from '../utils/logger'
+import { SYMBOLS, SLUG_PREFIX } from '../types/market'
+import type { MarketSymbol } from '../types/market'
+import type { MarketWindowOpenEvent } from '../types/events'
 
 const GAMMA_URL = process.env['GAMMA_API_URL'] ?? 'https://gamma-api.polymarket.com'
 const TICK_INTERVAL_MS = 1_000

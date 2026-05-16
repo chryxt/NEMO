@@ -6,8 +6,8 @@
  * Signal values: -1.0 (strong bearish/down) to +1.0 (strong bullish/up)
  * Confidence:    0.0 (no signal) to 1.0 (maximum conviction)
  */
-import type { FeatureSnapshot, SignalScore, SignalSet, CompositeSignal } from './types.js'
-import { clamp, toDirection, neutral } from './math.js'
+import type { FeatureSnapshot, SignalScore, SignalSet, CompositeSignal } from './types'
+import { clamp, toDirection, neutral } from './math'
 
 // Signal weights for composite (must sum to 1.0)
 const WEIGHTS: Record<keyof SignalSet, number> = {

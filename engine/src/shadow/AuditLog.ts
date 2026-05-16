@@ -18,8 +18,8 @@ import { createHash } from 'crypto'
 import { createWriteStream, mkdirSync, readFileSync, existsSync } from 'fs'
 import type { WriteStream } from 'fs'
 import { join } from 'path'
-import { log } from '../utils/logger.js'
-import type { AuditEntry } from './types.js'
+import { log } from '../utils/logger'
+import type { AuditEntry } from './types'
 
 const ZERO_HASH = '0'.repeat(64)
 

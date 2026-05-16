@@ -1,4 +1,4 @@
-import type { MarketSymbol } from '../types/market.js'
+import type { MarketSymbol } from '../types/market'
 
 // ── Regime ────────────────────────────────────────────────────────────────────
 

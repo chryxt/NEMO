@@ -1,5 +1,5 @@
-import type { MarketSymbol } from '../types/market.js'
-import type { MarketRegime } from '../signals/types.js'
+import type { MarketSymbol } from '../types/market'
+import type { MarketRegime } from '../signals/types'
 
 // ── Order primitives ──────────────────────────────────────────────────────────
 

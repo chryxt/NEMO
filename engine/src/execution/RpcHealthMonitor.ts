@@ -5,10 +5,10 @@
  * Exposes a rolling health report. If health degrades, emits a risk flag
  * via callback so the gateway can route to halt or block submissions.
  */
-import { log } from '../utils/logger.js'
-import { RingBuffer } from '../utils/RingBuffer.js'
+import { log } from '../utils/logger'
+import { RingBuffer } from '../utils/RingBuffer'
 import type { PublicClient } from 'viem'
-import type { RpcHealth } from './types.js'
+import type { RpcHealth } from './types'
 
 const SAMPLE_INTERVAL_MS    = 15_000
 const LATENCY_BUFFER        = 60

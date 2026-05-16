@@ -8,10 +8,10 @@
  * including 0x prefix) — distinct from the Phase 8 dry-run signature which
  * is 'DRYRUN-' prefixed.
  */
-import { log } from '../utils/logger.js'
+import { log } from '../utils/logger'
 import type { Hex } from 'viem'
-import type { SecureWallet } from './SecureWallet.js'
-import type { PolymarketOrderStruct } from '../shadow/types.js'
+import type { SecureWallet } from './SecureWallet'
+import type { PolymarketOrderStruct } from '../shadow/types'
 
 const DOMAIN_NAME = 'Polymarket CTF Exchange'
 const DOMAIN_VERSION = '1'

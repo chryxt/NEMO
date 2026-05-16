@@ -5,7 +5,7 @@
  * since the underlying periodicity depends on the simulation context
  * (5-min markets × N markets per day).
  */
-import type { RiskMetrics } from './types.js'
+import type { RiskMetrics } from './types'
 
 // Default annualization for 5-min Polymarket markets:
 //   periods per day = 24h × 60min / 5min = 288 per market per day

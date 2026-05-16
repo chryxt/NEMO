@@ -7,9 +7,9 @@
  *   - Slippage is attributed to spread cost vs depth cost vs latency adverse selection
  *   - No fill emitted when no quote exists at arrival time
  */
-import { config } from '../config/index.js'
-import type { OrderBook } from './OrderBook.js'
-import type { SimOrder, SimFill, OrderState } from './types.js'
+import { config } from '../config/index'
+import type { OrderBook } from './OrderBook'
+import type { SimOrder, SimFill, OrderState } from './types'
 
 export interface FillResult {
   fills:    SimFill[]

@@ -5,12 +5,12 @@
  * Read-only: pulls portfolio snapshot at sample cadence; subscribes to
  * signal.frame for confidence decay. Does not modify simulation state.
  */
-import { bus } from '../bus/EventBus.js'
-import { RingBuffer } from '../utils/RingBuffer.js'
-import type { SimulationEngine } from '../sim/SimulationEngine.js'
+import { bus } from '../bus/EventBus'
+import { RingBuffer } from '../utils/RingBuffer'
+import type { SimulationEngine } from '../sim/SimulationEngine'
 import type {
   EdgePersistenceReport, EdgeWindow, DailyEdgeBucket,
-} from './types.js'
+} from './types'
 
 const EQUITY_BUFFER       = 1_500          // 1500 × 60s = 25h
 const CONFIDENCE_BUFFER   = 5_000

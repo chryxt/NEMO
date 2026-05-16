@@ -1,6 +1,6 @@
 import { Pool } from 'pg'
-import { config } from '../config/index.js'
-import { log } from '../utils/logger.js'
+import { config } from '../config/index'
+import { log } from '../utils/logger'
 
 let _pool: Pool | null = null
 

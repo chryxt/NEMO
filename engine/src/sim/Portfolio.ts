@@ -9,8 +9,8 @@
  *   At window close, the position pays $1/share if outcome matches the price
  *   direction, $0 otherwise. Realized PnL is finalized at settlement.
  */
-import type { MarketSymbol } from '../types/market.js'
-import type { SimFill, SimOrder, SimPosition, PortfolioSnapshot, Outcome } from './types.js'
+import type { MarketSymbol } from '../types/market'
+import type { SimFill, SimOrder, SimPosition, PortfolioSnapshot, Outcome } from './types'
 
 export interface SettlementOutcome {
   symbol:   MarketSymbol

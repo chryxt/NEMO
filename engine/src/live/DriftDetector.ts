@@ -14,11 +14,11 @@
  * Pull-based snapshot via getReport().
  */
 import { readFileSync, existsSync } from 'fs'
-import { bus } from '../bus/EventBus.js'
-import { log } from '../utils/logger.js'
-import { RingBuffer } from '../utils/RingBuffer.js'
-import type { LiveBaseline, DriftReport, DriftMetric } from './types.js'
-import type { SimFill } from '../sim/types.js'
+import { bus } from '../bus/EventBus'
+import { log } from '../utils/logger'
+import { RingBuffer } from '../utils/RingBuffer'
+import type { LiveBaseline, DriftReport, DriftMetric } from './types'
+import type { SimFill } from '../sim/types'
 
 const ROLL_MS               = 5 * 60_000
 const SPREAD_BUFFER         = 1_000

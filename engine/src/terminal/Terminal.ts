@@ -1,11 +1,11 @@
-import { bus } from '../bus/EventBus.js'
-import { render } from './renderer.js'
-import { makeInitialState } from '../types/market.js'
-import type { GlobalState } from '../types/market.js'
-import type { MetricsEngine } from '../engines/MetricsEngine.js'
-import type { FeedHealthMonitor } from '../monitors/FeedHealthMonitor.js'
-import type { LivePaperEngine } from '../live/LivePaperEngine.js'
-import { config } from '../config/index.js'
+import { bus } from '../bus/EventBus'
+import { render } from './renderer'
+import { makeInitialState } from '../types/market'
+import type { GlobalState } from '../types/market'
+import type { MetricsEngine } from '../engines/MetricsEngine'
+import type { FeedHealthMonitor } from '../monitors/FeedHealthMonitor'
+import type { LivePaperEngine } from '../live/LivePaperEngine'
+import { config } from '../config/index'
 
 export class Terminal {
   private currentState: GlobalState = makeInitialState()

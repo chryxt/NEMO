@@ -1,7 +1,7 @@
-import { bus } from '../bus/EventBus.js'
-import { log } from '../utils/logger.js'
-import { config } from '../config/index.js'
-import { getPool } from '../db/pool.js'
+import { bus } from '../bus/EventBus'
+import { log } from '../utils/logger'
+import { config } from '../config/index'
+import { getPool } from '../db/pool'
 
 // Events that carry meaningful replay data.
 // Excludes: state.snapshot (derived/large), market.tick (high-freq/derived).

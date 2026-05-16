@@ -15,8 +15,8 @@
  *   These are computed per request — never persisted.
  */
 import { createHmac } from 'crypto'
-import { log } from '../utils/logger.js'
-import { SecureSecret } from './SecureWallet.js'
+import { log } from '../utils/logger'
+import { SecureSecret } from './SecureWallet'
 
 export interface PolymarketCredentials {
   apiKey:        SecureSecret

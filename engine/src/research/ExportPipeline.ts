@@ -1,7 +1,7 @@
 import { createWriteStream, mkdirSync } from 'fs'
 import { join } from 'path'
-import { log } from '../utils/logger.js'
-import type { SignalFrame, ResearchReport } from '../signals/types.js'
+import { log } from '../utils/logger'
+import type { SignalFrame, ResearchReport } from '../signals/types'
 
 // Flatten a SignalFrame to a single-level record for CSV/JSONL row export
 function flattenFrame(f: SignalFrame): Record<string, string | number | boolean> {

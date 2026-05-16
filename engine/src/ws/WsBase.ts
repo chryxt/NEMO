@@ -1,5 +1,5 @@
 import WebSocket from 'ws'
-import { log } from '../utils/logger.js'
+import { log } from '../utils/logger'
 
 const CONNECT_TIMEOUT_MS = 10_000
 const MAX_RECONNECT_DELAY_S = 60

@@ -8,12 +8,12 @@
  *
  * Emits `ops.structuralBreak` when a metric's CUSUM exceeds threshold.
  */
-import { bus } from '../bus/EventBus.js'
-import { log } from '../utils/logger.js'
-import { RingBuffer } from '../utils/RingBuffer.js'
+import { bus } from '../bus/EventBus'
+import { log } from '../utils/logger'
+import { RingBuffer } from '../utils/RingBuffer'
 import type {
   DriftEvolutionPoint, DriftEvolutionReport, StructuralBreakEvent,
-} from './types.js'
+} from './types'
 
 const POINTS_PER_METRIC = 720      // 12h at one per minute (drift.alert is throttled to 60s/metric)
 const TRANSITION_BUFFER = 200

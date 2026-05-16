@@ -1,5 +1,5 @@
 import { createHash } from 'crypto'
-import type { GlobalState } from '../types/market.js'
+import type { GlobalState } from '../types/market'
 
 // Canonical JSON serialization: sorted keys, no whitespace.
 // Ensures identical state always produces identical bytes regardless of

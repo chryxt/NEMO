@@ -1,7 +1,7 @@
-import { bus } from '../bus/EventBus.js'
-import { log } from '../utils/logger.js'
-import type { SignalFrame, MarketRegime, SignalObservabilityMetrics } from '../signals/types.js'
-import type { MarketSymbol } from '../types/market.js'
+import { bus } from '../bus/EventBus'
+import { log } from '../utils/logger'
+import type { SignalFrame, MarketRegime, SignalObservabilityMetrics } from '../signals/types'
+import type { MarketSymbol } from '../types/market'
 
 const HIGH_CONFIDENCE_THRESHOLD = 0.6
 

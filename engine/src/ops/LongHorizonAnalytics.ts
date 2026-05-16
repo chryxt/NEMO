@@ -8,8 +8,8 @@
  */
 import { mkdirSync, readdirSync, readFileSync, writeFileSync } from 'fs'
 import { join } from 'path'
-import { log } from '../utils/logger.js'
-import type { DailyReport } from './types.js'
+import { log } from '../utils/logger'
+import type { DailyReport } from './types'
 
 export class LongHorizonAnalytics {
   constructor(private readonly outputDir: string) {}

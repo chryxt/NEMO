@@ -7,8 +7,8 @@
  */
 import { mkdirSync, readFileSync, writeFileSync, existsSync } from 'fs'
 import { join } from 'path'
-import { log } from '../utils/logger.js'
-import type { DailyNotionalState } from './types.js'
+import { log } from '../utils/logger'
+import type { DailyNotionalState } from './types'
 
 export interface ConstraintConfig {
   maxNotionalUsd:      number

@@ -9,10 +9,10 @@
  * maintain internal state (e.g., last-trade time per symbol), but the
  * engine never directly observes it.
  */
-import type { SignalFrame } from '../signals/types.js'
-import type { WhaleAlertEvent } from '../types/events.js'
-import type { Portfolio } from '../sim/Portfolio.js'
-import type { OrderRequest } from '../sim/types.js'
+import type { SignalFrame } from '../signals/types'
+import type { WhaleAlertEvent } from '../types/events'
+import type { Portfolio } from '../sim/Portfolio'
+import type { OrderRequest } from '../sim/types'
 
 export interface Strategy {
   readonly name: string

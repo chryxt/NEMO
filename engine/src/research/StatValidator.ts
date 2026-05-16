@@ -7,9 +7,9 @@
  * - Break down hit rate by market regime
  * - Only count frames where signal.confidence > MIN_CONFIDENCE
  */
-import { pearson } from '../signals/math.js'
-import type { SignalFrame, SignalStats, ForwardStats, MarketRegime } from '../signals/types.js'
-import type { MarketSymbol } from '../types/market.js'
+import { pearson } from '../signals/math'
+import type { SignalFrame, SignalStats, ForwardStats, MarketRegime } from '../signals/types'
+import type { MarketSymbol } from '../types/market'
 
 const HORIZONS_MS       = [5_000, 30_000, 60_000]  // forward-return horizons
 const MIN_CONFIDENCE    = 0.3                        // ignore low-confidence signals

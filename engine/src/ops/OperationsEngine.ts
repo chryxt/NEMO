@@ -14,19 +14,19 @@
  * hot path). Daily rollover at UTC midnight, weekly on Monday UTC, monthly
  * on first day of month UTC.
  */
-import { bus } from '../bus/EventBus.js'
-import { log } from '../utils/logger.js'
-import { config } from '../config/index.js'
-import { ReliabilityMonitor } from './ReliabilityMonitor.js'
-import { EdgePersistenceTracker } from './EdgePersistence.js'
-import { DriftEvolutionAnalyzer } from './DriftEvolution.js'
-import { DatasetCurator } from './DatasetCurator.js'
-import { OperationalSafety } from './OperationalSafety.js'
-import { DailyReportWriter } from './DailyReport.js'
-import { LongHorizonAnalytics, weekTag, monthTag } from './LongHorizonAnalytics.js'
-import type { SimulationEngine } from '../sim/SimulationEngine.js'
-import type { StrategyHealthMonitor } from '../live/StrategyHealth.js'
-import type { OpsSnapshot, DailyReport } from './types.js'
+import { bus } from '../bus/EventBus'
+import { log } from '../utils/logger'
+import { config } from '../config/index'
+import { ReliabilityMonitor } from './ReliabilityMonitor'
+import { EdgePersistenceTracker } from './EdgePersistence'
+import { DriftEvolutionAnalyzer } from './DriftEvolution'
+import { DatasetCurator } from './DatasetCurator'
+import { OperationalSafety } from './OperationalSafety'
+import { DailyReportWriter } from './DailyReport'
+import { LongHorizonAnalytics, weekTag, monthTag } from './LongHorizonAnalytics'
+import type { SimulationEngine } from '../sim/SimulationEngine'
+import type { StrategyHealthMonitor } from '../live/StrategyHealth'
+import type { OpsSnapshot, DailyReport } from './types'
 
 const ROLLOVER_CHECK_MS = 60_000   // check for date crossings every minute
 

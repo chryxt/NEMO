@@ -5,13 +5,13 @@
  * plus a ranked summary. Same input always yields the same ranking
  * (no tiebreaker randomness — order of insertion preserved on tie).
  */
-import { log } from '../utils/logger.js'
-import { runIsolatedSim } from './ReplayRunner.js'
-import { LatencyModel } from '../sim/LatencyModel.js'
-import type { Strategy } from '../strategies/Strategy.js'
+import { log } from '../utils/logger'
+import { runIsolatedSim } from './ReplayRunner'
+import { LatencyModel } from '../sim/LatencyModel'
+import type { Strategy } from '../strategies/Strategy'
 import type {
   RecordedEvent, ComparatorCell, ComparisonResult,
-} from './types.js'
+} from './types'
 
 export interface LatencyConfig {
   tag:        string

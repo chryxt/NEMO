@@ -1,7 +1,7 @@
 import { createWriteStream, mkdirSync } from 'fs'
 import type { WriteStream } from 'fs'
-import { bus } from '../bus/EventBus.js'
-import { log } from '../utils/logger.js'
+import { bus } from '../bus/EventBus'
+import { log } from '../utils/logger'
 
 const FLUSH_EVERY   = 1000  // flush every N events
 const FLUSH_INTERVAL_MS = 5_000

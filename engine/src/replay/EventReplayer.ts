@@ -1,8 +1,8 @@
 import { createReadStream } from 'fs'
 import { createInterface } from 'readline'
-import { bus } from '../bus/EventBus.js'
-import { log } from '../utils/logger.js'
-import type { BusEvents } from '../types/events.js'
+import { bus } from '../bus/EventBus'
+import { log } from '../utils/logger'
+import type { BusEvents } from '../types/events'
 
 interface RecordedEvent {
   ts: number

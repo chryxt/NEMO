@@ -8,17 +8,17 @@
  *   const session = new ResearchSession(source, outputDir, speedMultiplier)
  *   const report  = await session.run()
  */
-import { bus } from '../bus/EventBus.js'
-import { log } from '../utils/logger.js'
-import { EventReplayer } from '../replay/EventReplayer.js'
-import { DbReplayer } from '../replay/DbReplayer.js'
-import { SignalEngine } from '../signals/SignalEngine.js'
-import { SignalObserver } from './SignalObserver.js'
-import { StatValidator } from './StatValidator.js'
-import { ExportPipeline } from './ExportPipeline.js'
-import type { SignalFrame, ResearchReport, MarketRegime } from '../signals/types.js'
-import type { MarketSymbol } from '../types/market.js'
-import { SYMBOLS } from '../types/market.js'
+import { bus } from '../bus/EventBus'
+import { log } from '../utils/logger'
+import { EventReplayer } from '../replay/EventReplayer'
+import { DbReplayer } from '../replay/DbReplayer'
+import { SignalEngine } from '../signals/SignalEngine'
+import { SignalObserver } from './SignalObserver'
+import { StatValidator } from './StatValidator'
+import { ExportPipeline } from './ExportPipeline'
+import type { SignalFrame, ResearchReport, MarketRegime } from '../signals/types'
+import type { MarketSymbol } from '../types/market'
+import { SYMBOLS } from '../types/market'
 
 export type ReplaySource =
   | { type: 'file'; path: string }

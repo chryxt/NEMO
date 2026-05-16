@@ -15,9 +15,9 @@
  * `signTypedData()` — that change is deliberately deferred.
  */
 import { createHash } from 'crypto'
-import { log } from '../utils/logger.js'
-import type { WalletAdapter } from './WalletAdapter.js'
-import type { PolymarketOrderStruct, ShadowSignature } from './types.js'
+import { log } from '../utils/logger'
+import type { WalletAdapter } from './WalletAdapter'
+import type { PolymarketOrderStruct, ShadowSignature } from './types'
 
 const DRYRUN_PREFIX = 'DRYRUN-'
 const POLY_DOMAIN_NAME = 'Polymarket CTF Exchange'

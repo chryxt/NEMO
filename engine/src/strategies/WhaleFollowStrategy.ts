@@ -6,13 +6,13 @@
  *
  * All parameters default to config values for backward compatibility.
  */
-import { config } from '../config/index.js'
-import type { Strategy } from './Strategy.js'
-import type { SignalFrame } from '../signals/types.js'
-import type { WhaleAlertEvent } from '../types/events.js'
-import type { Portfolio } from '../sim/Portfolio.js'
-import type { OrderRequest, Outcome } from '../sim/types.js'
-import type { MarketSymbol } from '../types/market.js'
+import { config } from '../config/index'
+import type { Strategy } from './Strategy'
+import type { SignalFrame } from '../signals/types'
+import type { WhaleAlertEvent } from '../types/events'
+import type { Portfolio } from '../sim/Portfolio'
+import type { OrderRequest, Outcome } from '../sim/types'
+import type { MarketSymbol } from '../types/market'
 
 export interface WhaleFollowStrategyParams {
   entrySize?:          number   // default: 100

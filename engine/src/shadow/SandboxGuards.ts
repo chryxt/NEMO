@@ -9,10 +9,10 @@
  *  - real-submission permission: HARDCODED FALSE in this phase
  */
 import { existsSync } from 'fs'
-import { bus } from '../bus/EventBus.js'
-import { log } from '../utils/logger.js'
-import { config } from '../config/index.js'
-import type { SandboxGuardStatus, ShadowOrder } from './types.js'
+import { bus } from '../bus/EventBus'
+import { log } from '../utils/logger'
+import { config } from '../config/index'
+import type { SandboxGuardStatus, ShadowOrder } from './types'
 
 const HALT_POLL_MS = 5_000
 

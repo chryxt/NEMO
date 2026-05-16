@@ -21,10 +21,10 @@
  */
 import { createServer, Socket } from 'net'
 import type { Server } from 'net'
-import { log } from '../utils/logger.js'
-import type { ApprovalQueue } from '../shadow/ApprovalQueue.js'
-import type { EmergencyHalt } from './EmergencyHalt.js'
-import type { OperatorAction } from './types.js'
+import { log } from '../utils/logger'
+import type { ApprovalQueue } from '../shadow/ApprovalQueue'
+import type { EmergencyHalt } from './EmergencyHalt'
+import type { OperatorAction } from './types'
 
 export interface OperatorConsoleCallbacks {
   getStatusText:     () => string

@@ -5,8 +5,8 @@
  * All types are dry-run by design. There is no field that authorizes,
  * authenticates, or transports a real order to any venue.
  */
-import type { MarketSymbol } from '../types/market.js'
-import type { OrderSide, Outcome } from '../sim/types.js'
+import type { MarketSymbol } from '../types/market'
+import type { OrderSide, Outcome } from '../sim/types'
 
 // ── Polymarket-compatible Order struct (dry-run shape only) ──────────────────
 //

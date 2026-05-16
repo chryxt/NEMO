@@ -8,17 +8,17 @@
  * market.windowOpen event; in replay/sim modes there may be no tokens
  * yet, in which case the shadow order tokenId is left as '0'.
  */
-import { bus } from '../bus/EventBus.js'
-import { log } from '../utils/logger.js'
-import { config } from '../config/index.js'
+import { bus } from '../bus/EventBus'
+import { log } from '../utils/logger'
+import { config } from '../config/index'
 import { randomBytes } from 'crypto'
-import type { MarketSymbol } from '../types/market.js'
-import type { Outcome } from '../sim/types.js'
+import type { MarketSymbol } from '../types/market'
+import type { Outcome } from '../sim/types'
 import type {
   ShadowOrder, PolymarketOrderStruct,
-} from './types.js'
-import type { WalletAdapter } from './WalletAdapter.js'
-import type { EIP712Signer } from './EIP712Signer.js'
+} from './types'
+import type { WalletAdapter } from './WalletAdapter'
+import type { EIP712Signer } from './EIP712Signer'
 
 const USDC_DECIMALS = 6
 const SHARE_DECIMALS = 6

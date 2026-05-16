@@ -2,7 +2,7 @@
  * Phase 7 ops types — long-run operations, edge persistence, drift evolution,
  * reliability, dataset curation, operational safety.
  */
-import type { PortfolioSnapshot } from '../sim/types.js'
+import type { PortfolioSnapshot } from '../sim/types'
 
 // ── Edge persistence ─────────────────────────────────────────────────────────
 

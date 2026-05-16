@@ -6,9 +6,9 @@
  *
  * Pure observation. Does not modify simulation state.
  */
-import { bus } from '../bus/EventBus.js'
-import { RingBuffer } from '../utils/RingBuffer.js'
-import type { ShadowOrder, ExecutionComparison } from './types.js'
+import { bus } from '../bus/EventBus'
+import { RingBuffer } from '../utils/RingBuffer'
+import type { ShadowOrder, ExecutionComparison } from './types'
 
 const RECENT_COMPARISONS = 100
 const WAIT_FOR_REALIZATION_MS = 5_000

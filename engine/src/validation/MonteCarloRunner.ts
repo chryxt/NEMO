@@ -10,17 +10,17 @@
  * Output: distribution of outcomes (mean/std/p5/p95/probability of loss).
  * Robust strategies have tight distributions. Overfit strategies tail.
  */
-import { log } from '../utils/logger.js'
-import { runIsolatedSim } from './ReplayRunner.js'
-import { SeededRandom } from './Random.js'
-import type { LatencyModel } from '../sim/LatencyModel.js'
-import type { Strategy } from '../strategies/Strategy.js'
+import { log } from '../utils/logger'
+import { runIsolatedSim } from './ReplayRunner'
+import { SeededRandom } from './Random'
+import type { LatencyModel } from '../sim/LatencyModel'
+import type { Strategy } from '../strategies/Strategy'
 import type {
   RecordedEvent, MonteCarloPerturbation, MonteCarloResult, MonteCarloRun,
-} from './types.js'
+} from './types'
 import type {
   ClobBestBidAskEvent, ClobPriceChangeEvent, WhaleAlertEvent,
-} from '../types/events.js'
+} from '../types/events'
 
 export interface MonteCarloSpec {
   events:        RecordedEvent[]

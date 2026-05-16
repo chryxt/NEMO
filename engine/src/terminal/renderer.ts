@@ -1,8 +1,8 @@
 import chalk from 'chalk'
-import type { GlobalState, MarketSymbol, SymbolState } from '../types/market.js'
-import type { EngineMetrics } from '../engines/MetricsEngine.js'
-import type { FeedHealth, FeedStatus } from '../monitors/FeedHealthMonitor.js'
-import type { LivePaperSnapshot } from '../live/types.js'
+import type { GlobalState, MarketSymbol, SymbolState } from '../types/market'
+import type { EngineMetrics } from '../engines/MetricsEngine'
+import type { FeedHealth, FeedStatus } from '../monitors/FeedHealthMonitor'
+import type { LivePaperSnapshot } from '../live/types'
 
 const W = 72  // terminal width
 

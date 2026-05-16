@@ -1,7 +1,7 @@
-import { bus } from '../bus/EventBus.js'
-import { log } from '../utils/logger.js'
-import { SYMBOLS, makeInitialState } from '../types/market.js'
-import type { MarketSymbol, GlobalState, SymbolState, WhaleTrade } from '../types/market.js'
+import { bus } from '../bus/EventBus'
+import { log } from '../utils/logger'
+import { SYMBOLS, makeInitialState } from '../types/market'
+import type { MarketSymbol, GlobalState, SymbolState, WhaleTrade } from '../types/market'
 import type {
   OraclePriceEvent,
   ActivityTradeEvent,
@@ -12,9 +12,9 @@ import type {
   MarketTickEvent,
   MarketWindowOpenEvent,
   ConnectionEvent,
-} from '../types/events.js'
-import type { ClobClient } from '../ws/clob/ClobClient.js'
-import { hashState } from '../utils/stateHash.js'
+} from '../types/events'
+import type { ClobClient } from '../ws/clob/ClobClient'
+import { hashState } from '../utils/stateHash'
 
 const WHALE_THRESHOLD_USD   = Number(process.env['WHALE_THRESHOLD'] ?? 10_000)
 const WHALE_RETENTION_SECS  = 60

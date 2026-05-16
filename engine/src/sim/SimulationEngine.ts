@@ -9,21 +9,21 @@
  *   "now" — never wall-clock Date.now(). This guarantees deterministic
  *   behavior under replay.
  */
-import { bus } from '../bus/EventBus.js'
-import { log } from '../utils/logger.js'
-import { config } from '../config/index.js'
-import { OrderBook } from './OrderBook.js'
-import { LatencyModel } from './LatencyModel.js'
-import { Portfolio } from './Portfolio.js'
-import { RiskManager } from './RiskManager.js'
-import { FillEngine } from './FillEngine.js'
-import { SYMBOLS } from '../types/market.js'
-import type { MarketSymbol } from '../types/market.js'
+import { bus } from '../bus/EventBus'
+import { log } from '../utils/logger'
+import { config } from '../config/index'
+import { OrderBook } from './OrderBook'
+import { LatencyModel } from './LatencyModel'
+import { Portfolio } from './Portfolio'
+import { RiskManager } from './RiskManager'
+import { FillEngine } from './FillEngine'
+import { SYMBOLS } from '../types/market'
+import type { MarketSymbol } from '../types/market'
 import type {
   OrderRequest, SimOrder, SimFill, Outcome, OrderState,
-} from './types.js'
-import type { SignalFrame } from '../signals/types.js'
-import type { Strategy } from '../strategies/Strategy.js'
+} from './types'
+import type { SignalFrame } from '../signals/types'
+import type { Strategy } from '../strategies/Strategy'
 
 interface TokenMeta { symbol: MarketSymbol; outcome: Outcome }
 

@@ -5,9 +5,9 @@
  * All metrics are pure observation; no side effects on simulation state.
  */
 import { statfsSync } from 'fs'
-import { bus } from '../bus/EventBus.js'
-import { RingBuffer } from '../utils/RingBuffer.js'
-import type { ReliabilityReport, ReliabilitySample } from './types.js'
+import { bus } from '../bus/EventBus'
+import { RingBuffer } from '../utils/RingBuffer'
+import type { ReliabilityReport, ReliabilitySample } from './types'
 
 const SAMPLE_BUFFER       = 4_320     // ~36h at 30s samples
 const LAG_BUFFER          = 1_000     // recent event lag samples

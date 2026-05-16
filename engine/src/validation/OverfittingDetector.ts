@@ -10,17 +10,17 @@
  *
  * Each check produces a score 0..1 (1 = best). The overall report aggregates.
  */
-import { log } from '../utils/logger.js'
-import { runIsolatedSim } from './ReplayRunner.js'
-import { SignalEngine } from '../signals/SignalEngine.js'
-import { bus } from '../bus/EventBus.js'
-import type { Strategy } from '../strategies/Strategy.js'
-import type { LatencyModel } from '../sim/LatencyModel.js'
+import { log } from '../utils/logger'
+import { runIsolatedSim } from './ReplayRunner'
+import { SignalEngine } from '../signals/SignalEngine'
+import { bus } from '../bus/EventBus'
+import type { Strategy } from '../strategies/Strategy'
+import type { LatencyModel } from '../sim/LatencyModel'
 import type {
   RecordedEvent, OverfittingFinding, OverfittingReport,
   ParameterSweepResult, WalkForwardResult,
-} from './types.js'
-import type { BusEvents } from '../types/events.js'
+} from './types'
+import type { BusEvents } from '../types/events'
 
 const PASS_THRESHOLD = {
   paramStability:      0.5,    // stability < 0.5 = pass (lower is more stable)

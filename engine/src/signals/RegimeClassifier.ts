@@ -3,7 +3,7 @@
  * Pure function — same FeatureSnapshot always produces the same regime.
  * Priority order: whale_driven > volatile > compressed > illiquid > trending > choppy
  */
-import type { FeatureSnapshot, MarketRegime } from './types.js'
+import type { FeatureSnapshot, MarketRegime } from './types'
 
 // Thresholds (all configurable via this module — no env vars, keeps it testable)
 const WHALE_DRIVEN_THRESHOLD  = 0.30   // whale % of total volume

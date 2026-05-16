@@ -9,7 +9,7 @@
  *   - When SHADOW_WALLET_ENABLED=false (default), even the address is a
  *     placeholder so accidental on-chain reference is impossible.
  */
-import { log } from '../utils/logger.js'
+import { log } from '../utils/logger'
 
 const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000'
 

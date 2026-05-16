@@ -13,9 +13,9 @@
  * (RESUME is disabled in this phase as a deliberate safety measure).
  */
 import { existsSync } from 'fs'
-import { bus } from '../bus/EventBus.js'
-import { log } from '../utils/logger.js'
-import { config } from '../config/index.js'
+import { bus } from '../bus/EventBus'
+import { log } from '../utils/logger'
+import { config } from '../config/index'
 
 const POLL_MS = 5_000
 

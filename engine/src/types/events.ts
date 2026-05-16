@@ -1,5 +1,5 @@
-import type { MarketSymbol, MarketWindow, GlobalState, WhaleTrade } from './market.js'
-import type { SignalFrame } from '../signals/types.js'
+import type { MarketSymbol, MarketWindow, GlobalState, WhaleTrade } from './market'
+import type { SignalFrame } from '../signals/types'
 
 // ─── RTDS Events ─────────────────────────────────────────────────────────────
 

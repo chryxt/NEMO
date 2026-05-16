@@ -1,11 +1,11 @@
-import { bus } from '../bus/EventBus.js'
-import { log } from '../utils/logger.js'
-import { FeatureStore } from './FeatureStore.js'
-import { extractFeatures } from './features.js'
-import { computeSignals, computeComposite } from './signals.js'
-import { classifyRegime } from './RegimeClassifier.js'
-import type { MarketSymbol } from '../types/market.js'
-import type { SignalFrame } from './types.js'
+import { bus } from '../bus/EventBus'
+import { log } from '../utils/logger'
+import { FeatureStore } from './FeatureStore'
+import { extractFeatures } from './features'
+import { computeSignals, computeComposite } from './signals'
+import { classifyRegime } from './RegimeClassifier'
+import type { MarketSymbol } from '../types/market'
+import type { SignalFrame } from './types'
 
 export class SignalEngine {
   private readonly store = new FeatureStore()

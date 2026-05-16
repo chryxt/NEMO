@@ -9,9 +9,9 @@
  */
 import { mkdirSync, writeFileSync, appendFileSync, existsSync } from 'fs'
 import { join } from 'path'
-import { bus } from '../bus/EventBus.js'
-import { log } from '../utils/logger.js'
-import type { DailyReport } from './types.js'
+import { bus } from '../bus/EventBus'
+import { log } from '../utils/logger'
+import type { DailyReport } from './types'
 
 const SUMMARY_HEADER = [
   'date',

@@ -1,9 +1,9 @@
-import { WsBase } from '../WsBase.js'
-import { bus } from '../../bus/EventBus.js'
-import { normalizeRtds } from './RtdsNormalizer.js'
-import { log } from '../../utils/logger.js'
-import { SequenceGuard } from '../../pipeline/SequenceGuard.js'
-import { RTDS_CHAINLINK_SYMBOL, RTDS_BINANCE_SYMBOL } from '../../types/market.js'
+import { WsBase } from '../WsBase'
+import { bus } from '../../bus/EventBus'
+import { normalizeRtds } from './RtdsNormalizer'
+import { log } from '../../utils/logger'
+import { SequenceGuard } from '../../pipeline/SequenceGuard'
+import { RTDS_CHAINLINK_SYMBOL, RTDS_BINANCE_SYMBOL } from '../../types/market'
 
 const RTDS_URL = process.env['RTDS_URL'] ?? 'wss://ws-live-data.polymarket.com'
 

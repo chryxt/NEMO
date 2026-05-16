@@ -1,8 +1,8 @@
-import { WsBase } from '../WsBase.js'
-import { bus } from '../../bus/EventBus.js'
-import { normalizeClob } from './ClobNormalizer.js'
-import { log } from '../../utils/logger.js'
-import { SequenceGuard } from '../../pipeline/SequenceGuard.js'
+import { WsBase } from '../WsBase'
+import { bus } from '../../bus/EventBus'
+import { normalizeClob } from './ClobNormalizer'
+import { log } from '../../utils/logger'
+import { SequenceGuard } from '../../pipeline/SequenceGuard'
 
 const CLOB_WS_URL =
   process.env['CLOB_WS_URL'] ?? 'wss://ws-subscriptions-clob.polymarket.com/ws/market'

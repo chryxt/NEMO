@@ -3,10 +3,10 @@
  * All functions are deterministic given the same store state and nowMs.
  * No mutations, no bus emissions, no side effects.
  */
-import type { MarketSymbol } from '../types/market.js'
-import type { FeatureSnapshot, OracleFeatures, OrderflowFeatures, QuoteFeatures, WhaleFeatures, WindowFeatures } from './types.js'
-import type { SymbolStore } from './FeatureStore.js'
-import { mean, stdDev, linearSlope, lastMs } from './math.js'
+import type { MarketSymbol } from '../types/market'
+import type { FeatureSnapshot, OracleFeatures, OrderflowFeatures, QuoteFeatures, WhaleFeatures, WindowFeatures } from './types'
+import type { SymbolStore } from './FeatureStore'
+import { mean, stdDev, linearSlope, lastMs } from './math'
 
 // Lookback windows (milliseconds)
 const W30  =  30_000

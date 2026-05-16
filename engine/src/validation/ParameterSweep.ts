@@ -5,12 +5,12 @@
  * full ExecutionReport + RiskMetrics. Returns ranked points and a
  * stability score (std / mean) that flags parameter overfit risk.
  */
-import { log } from '../utils/logger.js'
-import { runIsolatedSim } from './ReplayRunner.js'
-import type { RunSpec } from './ReplayRunner.js'
-import type { LatencyModel } from '../sim/LatencyModel.js'
-import type { Strategy } from '../strategies/Strategy.js'
-import type { RecordedEvent, ParameterSweepResult, ParamPoint } from './types.js'
+import { log } from '../utils/logger'
+import { runIsolatedSim } from './ReplayRunner'
+import type { RunSpec } from './ReplayRunner'
+import type { LatencyModel } from '../sim/LatencyModel'
+import type { Strategy } from '../strategies/Strategy'
+import type { RecordedEvent, ParameterSweepResult, ParamPoint } from './types'
 
 export type ParamGrid = Record<string, Array<number | string | boolean>>
 export type StrategyFactory = (params: Record<string, number | string | boolean>) => Strategy[]

@@ -13,12 +13,12 @@
  *
  * Emits shadow.riskFlag for every observed flag.
  */
-import { bus } from '../bus/EventBus.js'
-import { log } from '../utils/logger.js'
-import { RingBuffer } from '../utils/RingBuffer.js'
+import { bus } from '../bus/EventBus'
+import { log } from '../utils/logger'
+import { RingBuffer } from '../utils/RingBuffer'
 import type {
   RiskFlag, RiskFlagKind, OperationalRiskStatus,
-} from './types.js'
+} from './types'
 
 const RECENT_FLAG_BUFFER = 100
 const RECONNECT_DIVERGENCE_THRESHOLD = 3   // 3+ reconnects in 5 min = divergence

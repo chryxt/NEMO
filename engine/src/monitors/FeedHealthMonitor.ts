@@ -1,8 +1,8 @@
-import { bus } from '../bus/EventBus.js'
-import { log } from '../utils/logger.js'
-import { SYMBOLS } from '../types/market.js'
-import type { MarketSymbol } from '../types/market.js'
-import { config } from '../config/index.js'
+import { bus } from '../bus/EventBus'
+import { log } from '../utils/logger'
+import { SYMBOLS } from '../types/market'
+import type { MarketSymbol } from '../types/market'
+import { config } from '../config/index'
 
 export type FeedStatus = 'healthy' | 'warning' | 'stale'
 

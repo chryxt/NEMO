@@ -1,7 +1,7 @@
 import { readFileSync } from 'fs'
 import { join } from 'path'
-import { getPool } from './pool.js'
-import { log } from '../utils/logger.js'
+import { getPool } from './pool'
+import { log } from '../utils/logger'
 
 // __dirname resolves to engine/src/db in dev (ts-node) and engine/dist/db in prod.
 // Going two levels up always lands at engine/ in both cases.

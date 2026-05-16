@@ -1,9 +1,9 @@
 /**
  * Phase 5 validation types — research-grade robustness testing.
  */
-import type { ExecutionReport } from '../sim/types.js'
-import type { MarketRegime } from '../signals/types.js'
-import type { MarketSymbol } from '../types/market.js'
+import type { ExecutionReport } from '../sim/types'
+import type { MarketRegime } from '../signals/types'
+import type { MarketSymbol } from '../types/market'
 
 // Format used by EventRecorder / EventReplayer (JSONL line)
 export interface RecordedEvent {

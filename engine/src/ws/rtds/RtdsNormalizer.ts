@@ -1,6 +1,6 @@
-import type { OraclePriceEvent, ActivityTradeEvent } from '../../types/events.js'
-import type { MarketSymbol } from '../../types/market.js'
-import { RTDS_CHAINLINK_SYMBOL, RTDS_BINANCE_SYMBOL } from '../../types/market.js'
+import type { OraclePriceEvent, ActivityTradeEvent } from '../../types/events'
+import type { MarketSymbol } from '../../types/market'
+import { RTDS_CHAINLINK_SYMBOL, RTDS_BINANCE_SYMBOL } from '../../types/market'
 
 const CHAINLINK_REVERSE: Record<string, MarketSymbol> = Object.fromEntries(
   Object.entries(RTDS_CHAINLINK_SYMBOL).map(([sym, feed]) => [feed, sym as MarketSymbol])

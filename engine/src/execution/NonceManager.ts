@@ -7,7 +7,7 @@
  *
  * NEVER advances the on-chain nonce. Only reads it.
  */
-import { log } from '../utils/logger.js'
+import { log } from '../utils/logger'
 import type { Hex, PublicClient } from 'viem'
 
 const REFRESH_INTERVAL_MS = 30_000

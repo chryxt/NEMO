@@ -15,11 +15,11 @@
  */
 import { mkdirSync, readFileSync, writeFileSync, existsSync } from 'fs'
 import { join } from 'path'
-import { bus } from '../bus/EventBus.js'
-import { log } from '../utils/logger.js'
+import { bus } from '../bus/EventBus'
+import { log } from '../utils/logger'
 import type {
   ShadowOrder, ApprovalRequest, ApprovalStatus,
-} from './types.js'
+} from './types'
 
 const POLL_INTERVAL_MS = 2_000
 const DEFAULT_EXPIRY_MS = 30_000

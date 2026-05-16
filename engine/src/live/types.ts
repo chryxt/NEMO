@@ -1,10 +1,10 @@
 /**
  * Phase 6 live-paper types — drift, health, observability, sessions.
  */
-import type { PortfolioSnapshot, SimFill } from '../sim/types.js'
-import type { MarketRegime } from '../signals/types.js'
-import type { OpsSnapshot } from '../ops/types.js'
-import type { ShadowSnapshot } from '../shadow/types.js'
+import type { PortfolioSnapshot, SimFill } from '../sim/types'
+import type { MarketRegime } from '../signals/types'
+import type { OpsSnapshot } from '../ops/types'
+import type { ShadowSnapshot } from '../shadow/types'
 
 // ── Baseline (loaded from a Phase 5 validation report) ───────────────────────
 

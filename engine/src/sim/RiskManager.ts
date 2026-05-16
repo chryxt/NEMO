@@ -5,11 +5,11 @@
  * Kill switch is one-way per session: triggered by max consecutive losses,
  * never auto-reset.
  */
-import { log } from '../utils/logger.js'
-import { config } from '../config/index.js'
-import type { Portfolio } from './Portfolio.js'
-import type { OrderRequest } from './types.js'
-import type { FeatureSnapshot } from '../signals/types.js'
+import { log } from '../utils/logger'
+import { config } from '../config/index'
+import type { Portfolio } from './Portfolio'
+import type { OrderRequest } from './types'
+import type { FeatureSnapshot } from '../signals/types'
 
 export interface RiskDecision {
   ok:     boolean

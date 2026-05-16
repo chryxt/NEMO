@@ -9,15 +9,15 @@
  * All scenarios use closure state for stateful timing-based transforms.
  * No randomness — fully deterministic per scenario.
  */
-import { log } from '../utils/logger.js'
-import { runIsolatedSim } from './ReplayRunner.js'
-import type { LatencyModel } from '../sim/LatencyModel.js'
-import type { Strategy } from '../strategies/Strategy.js'
-import type { RecordedEvent, ScenarioRun, ScenarioResult } from './types.js'
+import { log } from '../utils/logger'
+import { runIsolatedSim } from './ReplayRunner'
+import type { LatencyModel } from '../sim/LatencyModel'
+import type { Strategy } from '../strategies/Strategy'
+import type { RecordedEvent, ScenarioRun, ScenarioResult } from './types'
 import type {
   ClobBestBidAskEvent, ClobPriceChangeEvent, ClobBookEvent,
   WhaleAlertEvent, MarketWindowOpenEvent,
-} from '../types/events.js'
+} from '../types/events'
 
 type Transformer = (event: RecordedEvent, idx: number) => RecordedEvent | RecordedEvent[] | null
 

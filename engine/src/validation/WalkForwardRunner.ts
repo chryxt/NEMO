@@ -11,12 +11,12 @@
  *   - train→test PnL ratio >> 1 = train-period overfitting
  *   - std-dev of test Sharpe across windows = inconsistency
  */
-import { log } from '../utils/logger.js'
-import { runIsolatedSim } from './ReplayRunner.js'
-import { runParameterSweep } from './ParameterSweep.js'
-import type { ParamGrid, StrategyFactory } from './ParameterSweep.js'
-import type { LatencyModel } from '../sim/LatencyModel.js'
-import type { RecordedEvent, WalkForwardResult, WalkForwardWindow } from './types.js'
+import { log } from '../utils/logger'
+import { runIsolatedSim } from './ReplayRunner'
+import { runParameterSweep } from './ParameterSweep'
+import type { ParamGrid, StrategyFactory } from './ParameterSweep'
+import type { LatencyModel } from '../sim/LatencyModel'
+import type { RecordedEvent, WalkForwardResult, WalkForwardWindow } from './types'
 
 export interface WalkForwardSpec {
   events:           RecordedEvent[]

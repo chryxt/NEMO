@@ -1,7 +1,7 @@
-import { bus } from '../bus/EventBus.js'
-import { log } from '../utils/logger.js'
-import { config } from '../config/index.js'
-import { RingBuffer } from '../utils/RingBuffer.js'
+import { bus } from '../bus/EventBus'
+import { log } from '../utils/logger'
+import { config } from '../config/index'
+import { RingBuffer } from '../utils/RingBuffer'
 
 const RATE_WINDOW_SECS   = 10      // rolling window for msg/sec rates
 const MEM_WARN_INTERVAL  = 60_000  // warn at most once per minute

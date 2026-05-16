@@ -10,11 +10,11 @@
 import { createWriteStream, mkdirSync } from 'fs'
 import type { WriteStream } from 'fs'
 import { join } from 'path'
-import { bus } from '../bus/EventBus.js'
-import { log } from '../utils/logger.js'
-import type { SimulationEngine } from '../sim/SimulationEngine.js'
-import type { DatasetTags } from './types.js'
-import type { SimFill } from '../sim/types.js'
+import { bus } from '../bus/EventBus'
+import { log } from '../utils/logger'
+import type { SimulationEngine } from '../sim/SimulationEngine'
+import type { DatasetTags } from './types'
+import type { SimFill } from '../sim/types'
 
 const FLUSH_INTERVAL_MS = 5_000
 

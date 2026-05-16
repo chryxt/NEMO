@@ -14,7 +14,7 @@ import type {
   ClobPriceChangeEvent,
   ClobBestBidAskEvent,
   ClobLastTradeEvent,
-} from '../types/events.js'
+} from '../types/events'
 
 const DEFAULT_TOP_OF_BOOK_DEPTH = 1_000  // shares assumed at top when only BBA is known
 

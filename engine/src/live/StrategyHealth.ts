@@ -4,11 +4,11 @@
  * Pull-based: getMetrics() computes everything on demand from RingBuffers.
  * No bus events emitted — alerts are AlertManager's responsibility.
  */
-import { bus } from '../bus/EventBus.js'
-import { RingBuffer } from '../utils/RingBuffer.js'
-import type { SignalFrame, MarketRegime } from '../signals/types.js'
-import type { SimFill } from '../sim/types.js'
-import type { StrategyHealthMetrics } from './types.js'
+import { bus } from '../bus/EventBus'
+import { RingBuffer } from '../utils/RingBuffer'
+import type { SignalFrame, MarketRegime } from '../signals/types'
+import type { SimFill } from '../sim/types'
+import type { StrategyHealthMetrics } from './types'
 
 const SIGNAL_BUFFER_SIZE     = 200
 const FILL_BUFFER_SIZE       = 100

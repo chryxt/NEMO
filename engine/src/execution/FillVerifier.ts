@@ -6,11 +6,11 @@
  * Polls are scheduled — never tight-looping. Polls stop after a fill is
  * observed, the order expires, or maxAttempts is reached.
  */
-import { log } from '../utils/logger.js'
-import { RingBuffer } from '../utils/RingBuffer.js'
-import type { PolymarketClient } from './PolymarketClient.js'
-import type { ExecutionDelta, ExecutionOrder } from './types.js'
-import type { ShadowOrder } from '../shadow/types.js'
+import { log } from '../utils/logger'
+import { RingBuffer } from '../utils/RingBuffer'
+import type { PolymarketClient } from './PolymarketClient'
+import type { ExecutionDelta, ExecutionOrder } from './types'
+import type { ShadowOrder } from '../shadow/types'
 
 const POLL_INTERVAL_MS = 5_000
 const MAX_ATTEMPTS     = 12         // 1 minute total polling

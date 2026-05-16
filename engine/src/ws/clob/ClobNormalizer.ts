@@ -4,7 +4,7 @@ import type {
   ClobPriceChangeEvent,
   ClobLastTradeEvent,
   ClobTickSizeChangeEvent,
-} from '../../types/events.js'
+} from '../../types/events'
 
 export type NormalizedClobMessage =
   | { type: 'book'; data: ClobBookEvent }

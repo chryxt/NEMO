@@ -20,7 +20,7 @@ import { polygon } from 'viem/chains'
 import type {
   WalletClient, PublicClient, Account, Hex, EIP1193RequestFn,
 } from 'viem'
-import { log } from '../utils/logger.js'
+import { log } from '../utils/logger'
 
 const REDACTED = '[REDACTED]'
 

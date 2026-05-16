@@ -6,14 +6,14 @@
  *   - Avg slippage in bps, fill counts, win/loss ratios
  *   - Configuration snapshot for reproducibility
  */
-import { config } from '../config/index.js'
+import { config } from '../config/index'
 import { mkdirSync, createWriteStream } from 'fs'
 import { join } from 'path'
-import { log } from '../utils/logger.js'
-import type { SimulationEngine } from '../sim/SimulationEngine.js'
-import type { ExecutionReport, SimFill } from '../sim/types.js'
-import type { SignalFrame, MarketRegime } from '../signals/types.js'
-import type { MarketSymbol } from '../types/market.js'
+import { log } from '../utils/logger'
+import type { SimulationEngine } from '../sim/SimulationEngine'
+import type { ExecutionReport, SimFill } from '../sim/types'
+import type { SignalFrame, MarketRegime } from '../signals/types'
+import type { MarketSymbol } from '../types/market'
 
 export class ExecutionAnalytics {
   constructor(

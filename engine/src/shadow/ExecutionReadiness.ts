@@ -13,10 +13,10 @@
  * The overall score does NOT auto-enable anything. It is a gauge for an
  * operator to consult before approving anything.
  */
-import type { ExecutionReadinessReport } from './types.js'
-import type { ExecutionComparator } from './ExecutionComparator.js'
-import type { OperationalRiskMonitor } from './OperationalRisk.js'
-import type { ShadowOrderEmitter } from './ShadowOrderEmitter.js'
+import type { ExecutionReadinessReport } from './types'
+import type { ExecutionComparator } from './ExecutionComparator'
+import type { OperationalRiskMonitor } from './OperationalRisk'
+import type { ShadowOrderEmitter } from './ShadowOrderEmitter'
 
 const RISK_FLAG_CAP_FOR_NORMALIZATION = 20
 

@@ -11,11 +11,11 @@
  * All parameters default to config values for backward compatibility.
  * Validation framework instantiates with explicit params for sweeps.
  */
-import { config } from '../config/index.js'
-import type { Strategy } from './Strategy.js'
-import type { SignalFrame } from '../signals/types.js'
-import type { Portfolio } from '../sim/Portfolio.js'
-import type { OrderRequest, Outcome } from '../sim/types.js'
+import { config } from '../config/index'
+import type { Strategy } from './Strategy'
+import type { SignalFrame } from '../signals/types'
+import type { Portfolio } from '../sim/Portfolio'
+import type { OrderRequest, Outcome } from '../sim/types'
 
 export interface CompositeStrategyParams {
   minConfidence?:         number   // default: config.simMinConfidence

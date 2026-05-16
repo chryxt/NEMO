@@ -5,9 +5,9 @@
  * EVERY field that could conceivably contain a secret is replaced with
  * a redacted placeholder before serialization.
  */
-import type { ShadowOrder } from '../shadow/types.js'
-import type { MarketSymbol } from '../types/market.js'
-import type { Outcome } from '../sim/types.js'
+import type { ShadowOrder } from '../shadow/types'
+import type { MarketSymbol } from '../types/market'
+import type { Outcome } from '../sim/types'
 
 // ── Gateway decision — produced by RealExecutionGateway.evaluate() ───────────
 

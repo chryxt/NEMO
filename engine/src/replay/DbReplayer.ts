@@ -1,7 +1,7 @@
-import { bus } from '../bus/EventBus.js'
-import { log } from '../utils/logger.js'
-import { getPool } from '../db/pool.js'
-import type { BusEvents } from '../types/events.js'
+import { bus } from '../bus/EventBus'
+import { log } from '../utils/logger'
+import { getPool } from '../db/pool'
+import type { BusEvents } from '../types/events'
 
 const KNOWN_EVENT_TYPES = new Set<string>([
   'oracle.price', 'trade.activity',

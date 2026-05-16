@@ -4,8 +4,8 @@
  * Currently emits to log only. Future: can route to webhook / file / DB.
  * Throttling: per-source 30s window so we don't spam during sustained issues.
  */
-import { bus } from '../bus/EventBus.js'
-import { log } from '../utils/logger.js'
+import { bus } from '../bus/EventBus'
+import { log } from '../utils/logger'
 
 const ALERT_THROTTLE_MS = 30_000
 

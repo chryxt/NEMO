@@ -1,17 +1,17 @@
 import { PoolClient } from 'pg'
-import { bus } from '../bus/EventBus.js'
-import { log } from '../utils/logger.js'
-import { config } from '../config/index.js'
-import { getPool } from '../db/pool.js'
-import { RingBuffer } from '../utils/RingBuffer.js'
+import { bus } from '../bus/EventBus'
+import { log } from '../utils/logger'
+import { config } from '../config/index'
+import { getPool } from '../db/pool'
+import { RingBuffer } from '../utils/RingBuffer'
 import type {
   OraclePriceEvent,
   ActivityTradeEvent,
   WhaleAlertEvent,
   ConnectionEvent,
-} from '../types/events.js'
-import type { MetricsEngine } from './MetricsEngine.js'
-import type { MarketSymbol } from '../types/market.js'
+} from '../types/events'
+import type { MetricsEngine } from './MetricsEngine'
+import type { MarketSymbol } from '../types/market'
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 

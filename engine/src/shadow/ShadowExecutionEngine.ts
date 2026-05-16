@@ -14,21 +14,21 @@
  *
  * NO real submission. NO outbound network traffic. NO autonomous firing.
  */
-import { bus } from '../bus/EventBus.js'
-import { log } from '../utils/logger.js'
-import { config } from '../config/index.js'
-import { WalletAdapter } from './WalletAdapter.js'
-import { EIP712Signer } from './EIP712Signer.js'
-import { ShadowOrderEmitter } from './ShadowOrderEmitter.js'
-import { ExecutionComparator } from './ExecutionComparator.js'
-import { ApprovalQueue } from './ApprovalQueue.js'
-import { SandboxGuards } from './SandboxGuards.js'
-import { OperationalRiskMonitor } from './OperationalRisk.js'
-import { ExecutionReadiness } from './ExecutionReadiness.js'
-import { AuditLog } from './AuditLog.js'
-import { RealExecutionGateway } from '../execution/RealExecutionGateway.js'
-import type { SimulationEngine } from '../sim/SimulationEngine.js'
-import type { ShadowSnapshot } from './types.js'
+import { bus } from '../bus/EventBus'
+import { log } from '../utils/logger'
+import { config } from '../config/index'
+import { WalletAdapter } from './WalletAdapter'
+import { EIP712Signer } from './EIP712Signer'
+import { ShadowOrderEmitter } from './ShadowOrderEmitter'
+import { ExecutionComparator } from './ExecutionComparator'
+import { ApprovalQueue } from './ApprovalQueue'
+import { SandboxGuards } from './SandboxGuards'
+import { OperationalRiskMonitor } from './OperationalRisk'
+import { ExecutionReadiness } from './ExecutionReadiness'
+import { AuditLog } from './AuditLog'
+import { RealExecutionGateway } from '../execution/RealExecutionGateway'
+import type { SimulationEngine } from '../sim/SimulationEngine'
+import type { ShadowSnapshot } from './types'
 
 // Polymarket CTF Exchange address on Polygon (informational — used only for
 // canonical EIP-712 domain hashing; this engine never connects to it).

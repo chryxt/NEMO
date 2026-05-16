@@ -1,5 +1,5 @@
 import { EventEmitter } from 'events'
-import type { BusEvents } from '../types/events.js'
+import type { BusEvents } from '../types/events'
 
 type Listener<T> = (event: T) => void
 
