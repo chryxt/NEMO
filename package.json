@@ -1,8 +1,8 @@
 {
-  "name": "polymarket-engine",
+  "name": "driftcore",
   "version": "0.1.0",
   "private": true,
-  "description": "Polymarket Crypto Microstructure Engine — BTC/ETH/SOL 5m markets",
+  "description": "DriftCore — Polymarket Microstructure Engine: real-time analysis, paper trading, supervised execution",
   "main": "dist/index.js",
   "scripts": {
     "dev": "ts-node-dev --respawn --transpile-only --exit-child src/index.ts",
